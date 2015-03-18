@@ -23,7 +23,7 @@ class Image(models.Model):
 class LearningPath(models.Model):
     subject = models.CharField(max_length=100)
     images = models.ManyToManyField(Image)
-    picture = models.ImageField()
+    # picture = models.ImageField()
     color = models.CharField(max_length=100)
     description = models.TextField()
 
@@ -40,8 +40,8 @@ class Shassaro(models.Model):
     docker_id = models.CharField(max_length=100)
 
 class Game(models.Model):
-    group1 = models.ManyToManyField(User)
-    group2 = models.ManyToManyField(User)
+    group1 = models.ManyToManyField(User, related_name='group1')
+    group2 = models.ManyToManyField(User, related_name='group2')
     computer = models.BooleanField()
     images = models.ManyToManyField(Image)
     shassaros = models.ManyToManyField(Shassaro)
@@ -50,8 +50,8 @@ class Game(models.Model):
     duration_minutes = models.PositiveIntegerField()
 
 class GameResult(models.Model):
-    losing_users = models.ManyToManyField(User)
-    winning_users = models.ManyToManyField(User)
+    losing_users = models.ManyToManyField(User, related_name='losing_users')
+    winning_users = models.ManyToManyField(User, related_name='winning_users')
     computer = models.BooleanField()
     start_time = models.DateTimeField()
     actual_duration_minutes = models.PositiveIntegerField()
@@ -60,7 +60,7 @@ class GameResult(models.Model):
 
 class Badge(models.Model):
     name = models.CharField(max_length=100)
-    icon = models.ImageField()
+    # icon = models.ImageField()
     class_name = models.CharField(max_length=100)
     experience = models.PositiveIntegerField()
 

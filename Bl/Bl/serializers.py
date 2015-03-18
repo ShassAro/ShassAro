@@ -4,6 +4,8 @@ from models import *
 
 __author__ = 'assaf'
 
+
 class TagSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tag
+        fields = ('pk', 'name', 'description')

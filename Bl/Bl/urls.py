@@ -1,13 +1,14 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from views import TagViewSet
+from rest_framework.urlpatterns import format_suffix_patterns
+import views
 
-tag_list = TagViewSet.as_view({
+
+tag_list = views.TagViewSet.as_view({
     'get':'list',
     'post':'create'
 })
-
-tag_detail = TagViewSet.as_view({
+tag_detail = views.TagViewSet.as_view({
     'get': 'retrieve',
     'put': 'update',
     'patch': 'partial_update',
@@ -22,5 +23,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^tags/$', tag_list),
-    url(r'^tags/(?P<pk>[0-9]+)/$', tag_detail)
+    url(r'^tags/(?P<pk>[a-zA-z]+)/$', tag_detail),
 )
+
+urlpatterns = format_suffix_patterns(urlpatterns)
