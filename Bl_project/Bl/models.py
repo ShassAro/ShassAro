@@ -7,7 +7,7 @@ __author__ = 'shay'
 # TODO: Bring back the primary_key=True to the necessary fields. Shay removed them because they were causing issues with duplicated fields.
 
 class Tag(models.Model):
-    name = models.CharField(max_length=100, primary_key=True, unique=True)
+    name = models.CharField(max_length=100, primary_key=True)
     description = models.TextField()
 
 
@@ -67,7 +67,7 @@ class GameResult(models.Model):
 
 
 class Badge(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, primary_key=True)
     # icon = models.ImageField()
     class_name = models.CharField(max_length=100)
     experience = models.PositiveIntegerField()

@@ -52,7 +52,7 @@ class GameResultSerializer(serializers.HyperlinkedModelSerializer):
 class BadgeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Badge
-        fields = ('pk', 'name', 'class_name', 'experience')
+        fields = ('name', 'class_name', 'experience')
 
 
 class DockerServerSerializer(serializers.HyperlinkedModelSerializer):
