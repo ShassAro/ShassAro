@@ -4,6 +4,7 @@ from django.db import models
 
 __author__ = 'shay'
 
+# TODO: Bring back the primary_key=True to the necessary fields. Shay removed them because they were causing issues with duplicated fields.
 
 class Tag(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -16,9 +17,9 @@ class Image(models.Model):
     tags = models.ManyToManyField(Tag)
     level = models.PositiveIntegerField()
     allow_in_game = models.BooleanField(default=False)
-    hints = JSONField() # represented as a json array
-    goal_description = JSONField() # JSON describing the goals in this image
-    post_script_name = models.TextField() # String to represent either script name, or script path
+    hints = JSONField()  # represented as a json array
+    goal_description = JSONField()  # JSON describing the goals in this image
+    post_script_name = models.TextField()  # String to represent either script name, or script path
     duration_minutes = models.PositiveIntegerField()
 
 
@@ -37,7 +38,7 @@ class GameUser(models.Model):
 
 
 class Shassaro(models.Model):
-    goals = JSONField() #JSON-serialized (text) version of the goals
+    goals = JSONField()  # JSON-serialized (text) version of the goals
     participants = models.ManyToManyField(GameUser)
     shassaro_ip = models.IPAddressField()
     docker_server_ip = models.IPAddressField()
@@ -67,7 +68,7 @@ class GameResult(models.Model):
 
 class Badge(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    #icon = models.ImageField()
+    # icon = models.ImageField()
     class_name = models.CharField(max_length=100)
     experience = models.PositiveIntegerField()
 
