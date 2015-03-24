@@ -40,18 +40,12 @@ class TagTests(APITestCase):
         """
         Send a GET request to make sure all 3 tags appear on our DB
         """
-        #response = self.client.get('/tags/', format='json')
         response = self.client.get(reverse('tag-list'))
-        self.assertTrue(response.content.count('pk') == 3)
+        self.assertTrue(response.content.count('name') == 3)
 
         """
         Send a GET request for 'tag1'
         """
-        #response = self.client.get(reverse('tag-detail', kwargs={'name' : 'tag1'}))
-        #response = self.client.get('/tags/?name=1', format='json')
-        #response = self.client.get('/tags?name=tag1', format='json')
-        #response = self.client.get('/tags/', name="tag1")
-        #print response
-        #print response.status_code
-        url = reverse('tag-detail', args=('pk','name','description'))
-        print url
+        response = self.client.get(reverse('tag-detail', args={'tag1'}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictContainsSubset({'name': 'tag1'}, response.data)
