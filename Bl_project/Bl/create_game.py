@@ -1,5 +1,9 @@
 import random
+import requests
+from rest_framework import status
+from Bl_project.Bl.exceptions import DeployFailedException
 from Bl_project.Bl.models import Shassaro, GameUser
+
 
 __author__ = 'shay'
 
@@ -29,7 +33,8 @@ def generate_password():
 
     return "".join(hash_list)
 
-def generate_shassaro(participants, image):
+
+def generate_initial_shassaro(participants, image):
     """
     Generate a Shassaro object
     :param participants: list of usernames that are to use this shassaro
@@ -45,3 +50,29 @@ def generate_shassaro(participants, image):
 
     shassaro.goals = [generate_goal() for goal in image.goal_description]
     return shassaro
+
+
+def deploy_shassaros(shassaros):
+    if shassaros.count() != 2:
+        raise ValueError("Number of passed ShassAro objects must be exactly 2")
+
+    # make the request
+    url = "http://dockerserver/dockers/deploy"
+    response = requests.post(url, data=shassaros)
+
+    # validate response status code
+    if response.status_code != status.HTTP_200_OK:
+        raise DeployFailedException("status_code:{0} response:{1}".format(response.status_code, response.text))
+
+    # parse the response & populate the shassaro objects
+    try:
+        shassaros_json = response.json()
+        for i in range(shassaros.count()):
+            shassaros[i].shassaro_ip = shassaros_json[i].shassaro_ip
+            shassaros[i].docker_server_ip = shassaros_json[i].docker_server_ip
+            shassaros[i].docker_id = shassaros_json[i].docker_id
+
+        return shassaros
+
+    except Exception as e:
+        raise DeployFailedException(e.message)

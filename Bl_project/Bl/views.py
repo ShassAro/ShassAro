@@ -1,3 +1,4 @@
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from serializers import *
 from models import *
@@ -35,6 +36,7 @@ class GameViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """
+        :param request: data is expected to be in the format of:
         {
             participants:{
                 group1: ["assaf", "roi"],
@@ -45,18 +47,28 @@ class GameViewSet(ModelViewSet):
                 {image2}
             ]
         }
+        :return: a new game
         """
         try:
+            # parse request payload
             participants = request.data["participants"]
             images = request.data["images"]
 
+            # build a game instance
             game = Game()
             for participant, image in (participants, images):
-                shassaro = generate_shassaro(participant, image)
+                shassaro = generate_initial_shassaro(participant, image)
                 game.shassaros.add(shassaro)
 
+            # deploy the shassaros
+            game.shassaros = deploy_shassaros(game.shassaros)
+
+            # save to db and return
+            game.save()
+            return Response(data=game, status=status.HTTP_201_CREATED)
+
         except Exception as e:
-            pass
+            return Response(data=e.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class GameResultViewSet(ModelViewSet):
