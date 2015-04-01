@@ -1,8 +1,8 @@
 import random
 import requests
 from rest_framework import status
-from Bl_project.Bl.exceptions import DeployFailedException
-from Bl_project.Bl.models import Shassaro, GameUser
+from exceptions import DeployFailedException
+from models import Shassaro, GameUser
 
 
 __author__ = 'shay'
