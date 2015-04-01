@@ -8,8 +8,8 @@ __author__ = 'shay'
 
 class TagTests(APITestCase):
 
-    def runTest(self):
-        pass
+    #def runTest(self):
+    #    pass
 
     def create_tag(self, name, description):
         """

@@ -27,13 +27,6 @@ class ImageTests(APITestCase):
         """
         Ensure we can create a couple of Images (the correct way)
         """
-        #TagTests.create_tag(self, "tag1", "tag1_desc")
-        #TagTests.create_tag(self, "tag2", "tag2_desc")
-
-        #tag_tests = TagTests()
-        #tag_tests.create_tag("tag1", "tag1_desc")
-        #tag_tests.create_tag("tag2", "tag2_desc")
-
         request_data = {"name": "tag1", "description": "tag1_desc"}
         request_data, self.client.post('/tags/', request_data, format='json')
 
