@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework import permissions
 from serializers import *
 from models import *
 from create_game import *
@@ -8,31 +9,37 @@ from create_game import *
 class TagViewSet(ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class ImageViewSet(ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class LearningPathViewSet(ModelViewSet):
     queryset = LearningPath.objects.all()
     serializer_class = LearningPathSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class GameUserViewSet(ModelViewSet):
     queryset = GameUser.objects.all()
     serializer_class = GameUserSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class ShassaroViewSet(ModelViewSet):
     queryset = Shassaro.objects.all()
     serializer_class = ShassaroSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class GameViewSet(ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
     def create(self, request, *args, **kwargs):
         """
@@ -74,18 +81,22 @@ class GameViewSet(ModelViewSet):
 class GameResultViewSet(ModelViewSet):
     queryset = GameResult.objects.all()
     serializer_class = GameResultSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class BadgeViewSet(ModelViewSet):
     queryset = Badge.objects.all()
     serializer_class = BadgeSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class DockerServerViewSet(ModelViewSet):
     queryset = DockerServer.objects.all()
     serializer_class = DockerServerSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class ConfigurationsViewSet(ModelViewSet):
     queryset = Configurations.objects.all()
     serializer_class = ConfigurationsSerializer
+    permission_classes = (permissions.IsAdminUser,)
