@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from rest_framework.urlpatterns import format_suffix_patterns
 import views
 from rest_framework.routers import DefaultRouter
+from django.conf.urls import include
 
 # Create a router and register ViewSets with it
 router = DefaultRouter()
@@ -22,6 +22,6 @@ urlpatterns = patterns('',
 
     url(r'^', include(router.urls)),
 
-    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
