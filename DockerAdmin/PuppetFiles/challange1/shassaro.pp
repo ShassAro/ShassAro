@@ -21,6 +21,16 @@ define shassaro::vnc($user = $title, $password) {
         }
 }
 
+define shassaro::user($user = $title, $password) {
+
+	user { $user:
+		managehome => true,
+		groups => ["shassaro"],
+		require => Group["shassaro"],
+		password => generate('/bin/sh', '-c', "openssl passwd -1 ${goal1} | tr -d '\n'"),
+	}
+}
+
 # Add the shassaro group
 group {"shassaro":
 
@@ -30,16 +40,8 @@ group {"shassaro":
 # Gets the users json and parse it to hash
 $hashUsers = parsejson($myusers)
 
-# Create the default elements
-$defaults = {
-
-	managehome => true,
-	groups	   => ["shassaro"],
-	require	   => Group["shassaro"],
-}
-
 # Create the users
-create_resources(user, $hashUsers, $defaults)
+create_resources(shassaro::user, $hashUsers)
 
 # Create the vnc password
 create_resources(shassaro::vnc, $hashUsers)
@@ -65,21 +67,23 @@ User<| |> -> Shassaro::Vnc<| |>
 file {"/tmp/password":
 
 	ensure => file,
-	content => "User: hackme \n Password: ${remotegoal1}",
+	content => "User: hackme \nPassword: Password1\n",
 }
 
 user {"hackme":
 
-	password => generate('/bin/sh', '-c', "openssl passwd -1 ${goal1} | tr -d '\n'"),
+	password => generate('/bin/sh', '-c', "openssl passwd -1 Password1 | tr -d '\n'"),
 	managehome => true,
 }
 
 file {"/home/hackme/.secret":
 
 	ensure => file,
-	content => $goal2,
+	content => $goal1,
 	mode => 644,
 	require => User['hackme'],
 }
 
-
+service {"sshd":
+    ensure => running,
+}

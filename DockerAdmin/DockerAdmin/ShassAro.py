@@ -4,18 +4,20 @@ from GameUser import GameUserSerializer
 
 class ShassAro():
 
-    def __init__(self, goals, participants, shassaro_ip, docker_server_ip, docker_id):
+    def __init__(self, goals, participants, shassaro_ip, docker_server_ip, docker_id, docker_name):
         self.goals = goals
         self.participants = participants
-        self.shassaroIp = shassaro_ip
-        self.dockerServerIp = docker_server_ip
-        self.dockerId = docker_id
+        self.shassaro_ip = shassaro_ip
+        self.docker_server_ip = docker_server_ip
+        self.docker_id = docker_id
+        self.docker_name = docker_name
 
 
 class ShassaroSerializer(serializers.Serializer):
         goals = serializers.ListField()
         participants = GameUserSerializer(many=True)
-        shassaroIp = serializers.CharField()
-        dockerServerIp = serializers.CharField()
-        dockerId = serializers.CharField()
+        shassaro_ip = serializers.CharField()
+        docker_server_ip = serializers.CharField()
+        docker_id = serializers.CharField()
+        docker_name = serializers.CharField()
 

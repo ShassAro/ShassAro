@@ -31,12 +31,13 @@ class DockerDeployRestView(APIView):
                 # Get the parameters from the post request
                 goals = currShassaro['goals']
                 participants = currShassaro['participants']
-                shassaro_ip = currShassaro['shassaroIp']
-                docker_server_ip = currShassaro['dockerServerIp']
-                docker_id = currShassaro['dockerId']
+                shassaro_ip = currShassaro['shassaro_ip']
+                docker_server_ip = currShassaro['docker_server_ip']
+                docker_id = currShassaro['docker_id']
+                docker_name = currShassaro['docker_name']
 
                 # Create a shassaro instance from them
-                inst = ShassAro(goals, participants, shassaro_ip, docker_server_ip, docker_id)
+                inst = ShassAro(goals, participants, shassaro_ip, docker_server_ip, docker_id, docker_name)
 
                 # Add it to the list
                 shassaroInstances.append(inst)
