@@ -82,7 +82,7 @@ class BadgeViewSet(ModelViewSet):
 
 
 class DockerServerViewSet(ModelViewSet):
-    queryset = DockerServer.objects.all()
+    queryset = DockerManager.objects.all()
     serializer_class = DockerServerSerializer
 
 

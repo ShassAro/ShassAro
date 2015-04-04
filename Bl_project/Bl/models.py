@@ -41,8 +41,8 @@ class GameUser(models.Model):
 class Shassaro(models.Model):
     goals = JSONField()  # JSON-serialized (text) version of the goals
     participants = models.ManyToManyField(GameUser)
-    shassaro_ip = models.IPAddressField()
-    docker_server_ip = models.IPAddressField()
+    shassaro_ip = models.GenericIPAddressField()
+    docker_server_ip = models.GenericIPAddressField()
     docker_id = models.CharField(max_length=100)
 
 
@@ -74,10 +74,11 @@ class Badge(models.Model):
     experience = models.PositiveIntegerField()
 
 
-class DockerServer(models.Model):
+class DockerManager(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    ip = models.IPAddressField(unique=True)
+    ip = models.GenericIPAddressField(unique=True)
+    port = models.PositiveIntegerField()
 
 
 class Configurations(models.Model):
-    docker_server = models.ManyToManyField(DockerServer)
+    docker_managers = models.OneToOneField(DockerManager)

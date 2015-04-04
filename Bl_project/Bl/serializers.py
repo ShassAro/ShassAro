@@ -57,7 +57,7 @@ class BadgeSerializer(serializers.HyperlinkedModelSerializer):
 
 class DockerServerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = DockerServer
+        model = DockerManager
         fields = ('pk', 'name', 'ip')
 
 

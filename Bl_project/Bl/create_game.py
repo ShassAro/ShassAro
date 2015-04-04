@@ -1,8 +1,9 @@
+from django.core import serializers
 import random
 import requests
 from rest_framework import status
-from exceptions import DeployFailedException
-from models import Shassaro, GameUser
+from bl_exceptions import DeployError, DockerManagerNotAvailableError
+from models import Shassaro, GameUser, DockerManager
 
 
 __author__ = 'shay'
@@ -51,18 +52,31 @@ def generate_initial_shassaro(participants, image):
     shassaro.goals = [generate_goal() for goal in image.goal_description]
     return shassaro
 
+# def mock_2_shassaros():
+
+
 
 def deploy_shassaros(shassaros):
-    if shassaros.count() != 2:
+    if shassaros is None or len(shassaros) != 2:
         raise ValueError("Number of passed ShassAro objects must be exactly 2")
+    if not all(isinstance(x, Shassaro) for x in shassaros):
+        raise TypeError("input must be of type {0}".format(Shassaro))
 
-    # make the request
-    url = "http://dockerserver/dockers/deploy"
-    response = requests.post(url, data=shassaros)
+    managers = DockerManager.objects.all()
+    if len(managers) == 0:
+        raise DockerManagerNotAvailableError()
+    docker_manager = managers[0]
+    docker_manager_url = "http://{0}:{1}/deploy".format(docker_manager.ip, docker_manager.port)
+
+    try:
+        # make the request
+        response = requests.post(docker_manager_url, data=serializers.serialize("json", shassaros))
+    except Exception as e:
+        raise DeployError("Error sending a request to the docker manager", e)
 
     # validate response status code
     if response.status_code != status.HTTP_200_OK:
-        raise DeployFailedException("status_code:{0} response:{1}".format(response.status_code, response.text))
+        raise DeployError("status_code:{0} response:{1}".format(response.status_code, response.text))
 
     # parse the response & populate the shassaro objects
     try:
@@ -75,4 +89,4 @@ def deploy_shassaros(shassaros):
         return shassaros
 
     except Exception as e:
-        raise DeployFailedException(e.message)
+        raise DeployError(e.message)
