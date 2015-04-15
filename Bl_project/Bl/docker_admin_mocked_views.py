@@ -1,13 +1,16 @@
 from Bl.serializers import ShassaroSerializer
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import *
 from rest_framework.views import APIView
 
 
-class Deploy(APIView):
-    @csrf_exempt
-    def get(self, request):
+@api_view(['GET'])
+def deploy(request):
+    if request.method == 'GET':
+        if request.data is None:
+            return Response("Empty input", status=HTTP_400_BAD_REQUEST)
         serializer = ShassaroSerializer(data=request.data, many=True)
         if not serializer.is_valid():
             return Response("Invalid input",status=HTTP_400_BAD_REQUEST)

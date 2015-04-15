@@ -1,4 +1,4 @@
-from Bl.tests.LoginAPITestCase import LoginAPITestCase
+from LoginAPITestCase import LoginAPITestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework import status
@@ -24,7 +24,6 @@ class BadgeTests(LoginAPITestCase):
         Make sure we can create a couple of badges (the correct way)
         """
         request_data, response = self.create_badge("badge1", "Badass Badge", 100)
-        print(response)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertDictContainsSubset(request_data, response.data)
 

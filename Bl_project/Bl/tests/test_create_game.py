@@ -1,6 +1,7 @@
 from Bl.create_game import deploy_shassaros
 from Bl.bl_exceptions import DockerManagerNotAvailableError, DeployError
 from Bl.models import Shassaro, GameUser, DockerManager
+from LoginAPITestCase import LoginAPITestCase
 
 
 __author__ = 'assaf'
@@ -63,9 +64,10 @@ class When_there_is_no_DockerManagerAvailable(TestCase):
 
 class When_request_to_DockerManager_fails(TestCase):
     def setUp(self):
+        # super(When_request_to_DockerManager_fails, self).setUp()
         self.shassaros = mock_Shassaro_objects()
         mock_DockerManager()
 
-    # def test_it_should_raise_DeployError(self):
-    #     with self.assertRaises(DeployError):
-    #         deploy_shassaros(self.shassaros)
+    def test_it_should_raise_DeployError(self):
+        with self.assertRaises(DeployError):
+            deploy_shassaros(self.shassaros)
