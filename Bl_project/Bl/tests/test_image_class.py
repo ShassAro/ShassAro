@@ -1,3 +1,4 @@
+from Bl.tests.LoginAPITestCase import LoginAPITestCase
 from django.core.urlresolvers import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -8,7 +9,7 @@ from test_badge_class import BadgeTests
 __author__ = 'shay'
 
 
-class ImageTests(APITestCase):
+class ImageTests(LoginAPITestCase):
     def create_image(self, docker_name, description, tags, level, allow_in_game, hints, goal_description,
                      post_script_name, duration_minutes):
         """

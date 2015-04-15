@@ -1,12 +1,14 @@
+from Bl.tests.LoginAPITestCase import LoginAPITestCase
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 
 
 __author__ = 'shay'
 
+class BadgeTests(LoginAPITestCase):
 
-class BadgeTests(APITestCase):
+
     def create_badge(self, name, class_name, experience):
         """
         Get a name, class_name, and experience, and use them to create the request_data json.
@@ -22,6 +24,7 @@ class BadgeTests(APITestCase):
         Make sure we can create a couple of badges (the correct way)
         """
         request_data, response = self.create_badge("badge1", "Badass Badge", 100)
+        print(response)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertDictContainsSubset(request_data, response.data)
 

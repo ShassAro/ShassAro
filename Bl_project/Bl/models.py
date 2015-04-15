@@ -78,6 +78,7 @@ class DockerManager(models.Model):
     name = models.CharField(max_length=100, unique=True)
     ip = models.GenericIPAddressField(unique=True)
     port = models.PositiveIntegerField()
+    url = models.CharField(max_length=100, default="")
 
 
 class Configurations(models.Model):

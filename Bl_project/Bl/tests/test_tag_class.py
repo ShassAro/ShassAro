@@ -1,3 +1,4 @@
+from Bl.tests.LoginAPITestCase import LoginAPITestCase
 from django.core.urlresolvers import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -6,7 +7,7 @@ from rest_framework.test import APITestCase
 __author__ = 'shay'
 
 
-class TagTests(APITestCase):
+class TagTests(LoginAPITestCase):
 
     #def runTest(self):
     #    pass

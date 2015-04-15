@@ -1,3 +1,4 @@
+from Bl import docker_admin_mocked_views
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 import views
@@ -17,11 +18,10 @@ router.register(r'badges', views.BadgeViewSet)
 router.register(r'docker_servers', views.DockerServerViewSet)
 router.register(r'configurations', views.ConfigurationsViewSet)
 
-
 urlpatterns = patterns('',
 
     url(r'^', include(router.urls)),
-
+    # url(r'^docker-admin-mock/deploy', docker_admin_mocked_views.Deploy),
     #url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )

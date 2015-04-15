@@ -6,9 +6,6 @@ from bl_exceptions import DeployError, DockerManagerNotAvailableError
 from models import Shassaro, GameUser, DockerManager
 
 
-__author__ = 'shay'
-
-
 def generate_goal():
     """
     Generates a random hash (128 bits)
@@ -52,11 +49,14 @@ def generate_initial_shassaro(participants, image):
     shassaro.goals = [generate_goal() for goal in image.goal_description]
     return shassaro
 
-# def mock_2_shassaros():
-
-
 
 def deploy_shassaros(shassaros):
+    """
+    Sends a request to the Docker Manager to deploy 2 shassaros
+    These shassaro objects represent a Game
+    :param shassaros: List of exactly 2 Shassaro objects
+    :return: The Shassaro objects populated with information from the Docker Manager
+    """
     if shassaros is None or len(shassaros) != 2:
         raise ValueError("Number of passed ShassAro objects must be exactly 2")
     if not all(isinstance(x, Shassaro) for x in shassaros):
@@ -66,7 +66,12 @@ def deploy_shassaros(shassaros):
     if len(managers) == 0:
         raise DockerManagerNotAvailableError()
     docker_manager = managers[0]
-    docker_manager_url = "http://{0}:{1}/deploy".format(docker_manager.ip, docker_manager.port)
+
+    docker_manager_url = "http://{0}:{1}".format(docker_manager.ip, docker_manager.port)
+    if docker_manager.url != "":
+        docker_manager_url += "/{0}/".format(docker_manager.url)
+    docker_manager_url += "deploy"
+
 
     try:
         # make the request
