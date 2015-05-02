@@ -1,0 +1,10 @@
+<% vncservers = "" -%>
+<% idx = 1 -%>
+<% servers = scope.lookupvar('vnc::servers') -%>
+<% servers.each do |h| -%>
+  <%- vncservers = "#{vncservers} #{idx}:#{h['user']}" -%>
+VNCSERVERARGS[<%= idx %>]="<%= h['args'] %>"
+  <%- idx = idx +1 -%>
+<% end -%>
+<% vncservers.strip! -%>
+VNCSERVERS="<%= vncservers %>"

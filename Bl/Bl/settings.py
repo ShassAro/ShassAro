@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'Bl'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -61,6 +62,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'NAME': '/home/assaf/PycharmProjects/ShassAro/Bl/db.sqlite3'
     }
 }
 
