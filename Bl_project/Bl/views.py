@@ -90,8 +90,14 @@ class BadgeViewSet(ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
 
 
-class DockerServerViewSet(ModelViewSet):
+class DockerManagerViewSet(ModelViewSet):
     queryset = DockerManager.objects.all()
+    serializer_class = DockerManagerSerializer
+    permission_classes = (permissions.IsAdminUser,)
+
+
+class DockerServerViewSet(ModelViewSet):
+    queryset = DockerServer.objects.all()
     serializer_class = DockerServerSerializer
     permission_classes = (permissions.IsAdminUser,)
 

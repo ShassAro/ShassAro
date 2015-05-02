@@ -15,6 +15,7 @@ router.register(r'shassaros', views.ShassaroViewSet)
 router.register(r'games', views.GameViewSet)
 router.register(r'game_results', views.GameResultViewSet)
 router.register(r'badges', views.BadgeViewSet)
+router.register(r'docker_managers', views.DockerManagerViewSet)
 router.register(r'docker_servers', views.DockerServerViewSet)
 router.register(r'configurations', views.ConfigurationsViewSet)
 

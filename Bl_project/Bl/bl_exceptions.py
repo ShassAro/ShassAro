@@ -14,6 +14,12 @@ class DeployError(BlException):
 
         super(DeployError, self).__init__(msg)
 
+
 class DockerManagerNotAvailableError(BlException):
     def __init__(self):
         super(DockerManagerNotAvailableError, self).__init__("No Docker Manager servers are configured. C'mon...")
+
+
+class DockerServerNotAvailableError(BlException):
+    def __init__(self):
+        super(DockerServerNotAvailableError, self).__init__("No Docker Server is configured. WTF...")

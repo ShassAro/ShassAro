@@ -2,10 +2,6 @@ from django.contrib.auth.models import User
 from jsonfield import JSONField
 from django.db import models
 
-__author__ = 'shay'
-
-# TODO: Bring back the primary_key=True to the necessary fields. Shay removed them because they were causing issues with duplicated fields.
-
 
 class Tag(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
@@ -81,5 +77,13 @@ class DockerManager(models.Model):
     url = models.CharField(max_length=100, default="")
 
 
+class DockerServer(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    protocol = models.CharField(max_length=100)
+    ip = models.GenericIPAddressField(unique=True)
+    port = models.PositiveIntegerField()
+
+
 class Configurations(models.Model):
     docker_managers = models.OneToOneField(DockerManager)
+    docker_servers = models.OneToOneField(DockerServer)

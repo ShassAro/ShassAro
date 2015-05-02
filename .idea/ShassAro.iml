@@ -2,7 +2,7 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Python 2.7.6 virtualenv at /home/assaf/PycharmProjects/ShassAro/Bl_project/blVirtualEnv" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 2.7.6 virtualenv at ~/Documents/shassaro_code/ShassAro/Bl_project/blVirtualEnv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

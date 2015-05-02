@@ -1,9 +1,10 @@
 from django.core import serializers
+import json
 import random
 import requests
 from rest_framework import status
-from bl_exceptions import DeployError, DockerManagerNotAvailableError
-from models import Shassaro, GameUser, DockerManager
+from bl_exceptions import DeployError, DockerManagerNotAvailableError, DockerServerNotAvailableError
+from models import Shassaro, GameUser, DockerManager, DockerServer
 
 
 def generate_goal():
@@ -50,6 +51,43 @@ def generate_initial_shassaro(participants, image):
     return shassaro
 
 
+def generate_docker_server_dict():
+    # Get all DockerServer objects into docker_servers_data list
+    docker_servers = DockerServer.objects.all()
+    if (len(docker_servers) == 0):
+        raise DockerServerNotAvailableError()
+    raw_docker_servers_data = serializers.serialize("python", docker_servers)
+    docker_servers_data = [ds['fields'] for ds in raw_docker_servers_data]
+
+    # Create a new docker_servers_list in which concatenate the protocol, ip and port for each docker server
+    docker_servers_list = []
+    for ds in docker_servers_data:
+        docker_servers_list.append("{0}://{1}:{2}".format(ds['protocol'], ds['ip'], ds['port']))
+
+    # add the 'docker_servers' key into the docker_servers_dict with the list as its value
+    docker_servers_dict = {'docker_servers': docker_servers_list}
+
+    # Go back
+    return docker_servers_dict
+
+
+def generate_shassaros_dict(shassaros):
+    # Get shassaros into shassaros_data list
+    raw_shassaros_data = serializers.serialize("python", shassaros)
+    shassaros_data = [sh['fields'] for sh in raw_shassaros_data]
+
+    # Add the 'shassaros' key into the shassaros_dict
+    shassaros_dict = {'shassaros': shassaros_data}
+
+    # Go back
+    return shassaros_dict
+
+
+def generate_final_dict_to_send(docker_servers_dict, shassaros_dict):
+    final_dict_to_send = {'docker_servers': docker_servers_dict['docker_servers'], 'shassaros': shassaros_dict['shassaros']}
+    return final_dict_to_send
+
+
 def deploy_shassaros(shassaros):
     """
     Sends a request to the Docker Manager to deploy 2 shassaros
@@ -72,10 +110,13 @@ def deploy_shassaros(shassaros):
         docker_manager_url += "/{0}/".format(docker_manager.url)
     docker_manager_url += "deploy"
 
+    docker_servers_dict = generate_docker_server_dict()
+    shassaros_dict = generate_shassaros_dict(shassaros)
 
     try:
         # make the request
-        response = requests.post(docker_manager_url, data=serializers.serialize("json", shassaros))
+        response = requests.post(docker_manager_url,
+                                 json.dumps(generate_final_dict_to_send(docker_servers_dict, shassaros_dict)))
     except Exception as e:
         raise DeployError("Error sending a request to the docker manager", e)
 
