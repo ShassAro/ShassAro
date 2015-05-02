@@ -21,6 +21,9 @@ class DockerDeployRestView(APIView):
         # Placeholder for the instances
         shassaroInstances = []
 
+        # Placeholder for docker servers
+        dockerServers = []
+
         try:
             # Get the two shassaros
             rawShssaros.append(request.DATA['shassaros'][0])
@@ -42,11 +45,13 @@ class DockerDeployRestView(APIView):
                 # Add it to the list
                 shassaroInstances.append(inst)
 
+            dockerServers = (request.DATA['dockerservers'])
+
         except Exception as e:
             return Response(e.__dict__, status=status.HTTP_400_BAD_REQUEST)
 
         # Pass it to Dockermanager
-        deployClass = DockerDeploy(shassaroInstances, *args, **kw)
+        deployClass = DockerDeploy(shassaroInstances, dockerServers, *args, **kw)
 
         # Just declare it out of scope
         response=""
@@ -71,27 +76,26 @@ class DockerKillRestView(APIView):
     def post(self, request, *args, **kw):
 
         try:
-
-            dockerId = []
-
             # Get the two shassaros
             dockerServerIp = request.DATA['dockerServerIp']
-            dockerId.append(request.DATA['dockerId'][0])
-            dockerId.append(request.DATA['dockerId'][1])
+            dockerId1 = request.DATA['dockerId'][0]
+            dockerId2 = request.DATA['dockerId'][1]
 
 
         except Exception as e:
             return Response(e.__dict__, status=status.HTTP_400_BAD_REQUEST)
 
         # Pass it to Dockermanager
-        killClass = DockerKill(dockerServerIp, dockerId, *args, **kw)
+        killClass1 = DockerKill(dockerServerIp, dockerId1, *args, **kw)
+        killClass2 = DockerKill(dockerServerIp, dockerId2, *args, **kw)
 
         # Just declare it out of scope
         response=""
 
         try:
             # Get the result
-            result = killClass.kill()
+            killClass1.kill()
+            killClass2.kill()
 
             response = Response("", status=status.HTTP_200_OK)
 
