@@ -65,15 +65,15 @@ class DockerDeploy():
                 counter+=1
 
             # Populate myusers for both images (json)
-            shassaroEnv1.append("FACTER_myusers={\"" + self.shassarosContainer.shassaros[0].participants[0]['name'] +
+            shassaroEnv1.append("FACTER_myusers={\"" + self.shassarosContainer.shassaros[0].participants['name'] +
                                 "\" : {\"password\" : \"" +
-                                self.shassarosContainer.shassaros[0].participants[0]['password']
+                                self.shassarosContainer.shassaros[0].participants['password']
                                 + "\"}}")
 
             # Populate myusers for both images (json)
-            shassaroEnv2.append("FACTER_myusers={\"" + self.shassarosContainer.shassaros[1].participants[0]['name'] +
+            shassaroEnv2.append("FACTER_myusers={\"" + self.shassarosContainer.shassaros[1].participants['name'] +
                                 "\" : {\"password\" : \"" +
-                                self.shassarosContainer.shassaros[1].participants[0]['password']
+                                self.shassarosContainer.shassaros[1].participants['password']
                                 + "\"}}")
 
         except Exception as e:
@@ -90,10 +90,10 @@ class DockerDeploy():
             # Create container 1
             container = client.create_container(image=self.shassarosContainer.shassaros[0].docker_name,
                                                 hostname="shassaro_"+
-                                                         self.shassarosContainer.shassaros[0].participants[0]['name'],
+                                                         self.shassarosContainer.shassaros[0].participants['name'],
                                                 mem_limit="256m", ports=[(5901,'tcp')], environment=shassaroEnv1,
                                                 name="shassaro_"+
-                                                     self.shassarosContainer.shassaros[0].participants[0]['name'],
+                                                     self.shassarosContainer.shassaros[0].participants['name'],
                                                 command="/bin/bash",
                                                 stdin_open=True,
                                                 tty=True)
@@ -108,10 +108,10 @@ class DockerDeploy():
             # Create container 2
             container = client.create_container(image=self.shassarosContainer.shassaros[1].docker_name,
                                                 hostname="shassaro_"+
-                                                         self.shassarosContainer.shassaros[1].participants[0]['name'],
+                                                         self.shassarosContainer.shassaros[1].participants['name'],
                                                 mem_limit="256m", ports=[(5901,'tcp')], environment=shassaroEnv2,
                                                 name="shassaro_"+
-                                                     self.shassarosContainer.shassaros[1].participants[0]['name'],
+                                                     self.shassarosContainer.shassaros[1].participants['name'],
                                                 command="/bin/bash",
                                                 stdin_open=True,
                                                 tty=True)
@@ -188,7 +188,7 @@ class DockerDeploy():
             #os.system(cmd)
 
             # Add it to shassaro
-            self.shassarosContainer.shassaros[0].participants[0]["vnc_port"] = localPort
+            self.shassarosContainer.shassaros[0].participants["vnc_port"] = localPort
 
         except Exception as e:
 
@@ -212,7 +212,7 @@ class DockerDeploy():
             subprocess.Popen(arguments)
 
             # Add it to shassaro
-            self.shassarosContainer.shassaros[1].participants[0]["vnc_port"] = localPort
+            self.shassarosContainer.shassaros[1].participants["vnc_port"] = localPort
 
         except Exception as e:
 

@@ -33,21 +33,25 @@ def generate_password():
     return "".join(hash_list)
 
 
-def generate_initial_shassaro(participants, image):
+def generate_initial_shassaro(participant, image):
     """
     Generate a Shassaro object
-    :param participants: list of usernames that are to use this shassaro
+    :param participant: list of usernames that are to use this shassaro
     :param image: the image this shassaro will be using
     :return: the generated shassaro with goals hashes
     """
     shassaro = Shassaro()
-    for participant in participants:
-        game_user = GameUser()
-        game_user.name = participant
-        game_user.password = generate_password()
-        shassaro.participants.add(game_user)
+    shassaro.docker_name = image.docker_name
+    shassaro.save()
+
+    game_user = GameUser()
+    game_user.name = participant
+    game_user.password = generate_password()
+    game_user.save()
+    shassaro.participants.add(game_user)
 
     shassaro.goals = [generate_goal() for goal in image.goal_description]
+    shassaro.save()
     return shassaro
 
 
@@ -76,6 +80,10 @@ def generate_shassaros_dict(shassaros):
     raw_shassaros_data = serializers.serialize("python", shassaros)
     shassaros_data = [sh['fields'] for sh in raw_shassaros_data]
 
+    for shassaro in shassaros_data:
+        game_user = GameUser.objects.get(pk=shassaro['participants'][0])
+        shassaro['participants'] = serializers.serialize("python", [game_user])[0]['fields']
+
     # Add the 'shassaros' key into the shassaros_dict
     shassaros_dict = {'shassaros': shassaros_data}
 
@@ -84,7 +92,7 @@ def generate_shassaros_dict(shassaros):
 
 
 def generate_final_dict_to_send(docker_servers_dict, shassaros_dict):
-    final_dict_to_send = {'docker_servers': docker_servers_dict['docker_servers'], 'shassaros': shassaros_dict['shassaros']}
+    final_dict_to_send = {'dockerservers': docker_servers_dict['docker_servers'], 'shassaros': shassaros_dict['shassaros']}
     return final_dict_to_send
 
 
@@ -105,9 +113,10 @@ def deploy_shassaros(shassaros):
         raise DockerManagerNotAvailableError()
     docker_manager = managers[0]
 
-    docker_manager_url = "http://{0}:{1}".format(docker_manager.ip, docker_manager.port)
-    if docker_manager.url != "":
+    docker_manager_url = "http://{0}:{1}/".format(docker_manager.ip, docker_manager.port)
+    if docker_manager.url != "/":
         docker_manager_url += "/{0}/".format(docker_manager.url)
+
     docker_manager_url += "deploy"
 
     docker_servers_dict = generate_docker_server_dict()
@@ -116,7 +125,7 @@ def deploy_shassaros(shassaros):
     try:
         # make the request
         response = requests.post(docker_manager_url,
-                                 json.dumps(generate_final_dict_to_send(docker_servers_dict, shassaros_dict)))
+                                 json=generate_final_dict_to_send(docker_servers_dict, shassaros_dict))
     except Exception as e:
         raise DeployError("Error sending a request to the docker manager", e)
 
