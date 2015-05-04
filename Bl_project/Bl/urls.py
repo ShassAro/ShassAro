@@ -18,6 +18,8 @@ router.register(r'badges', views.BadgeViewSet)
 router.register(r'docker_managers', views.DockerManagerViewSet)
 router.register(r'docker_servers', views.DockerServerViewSet)
 router.register(r'configurations', views.ConfigurationsViewSet)
+router.register(r'game_requests', views.GameRequestViewSet)
+router.register(r'game_request_statuses', views.GameRequestStatusViewSet)
 
 urlpatterns = patterns('',
 

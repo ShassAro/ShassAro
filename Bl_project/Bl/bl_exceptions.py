@@ -1,6 +1,5 @@
 import os
 
-__author__ = 'assaf'
 
 class BlException(Exception):
     pass

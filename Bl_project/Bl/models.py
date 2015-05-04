@@ -9,7 +9,7 @@ class Tag(models.Model):
 
 
 class Image(models.Model):
-    docker_name = models.CharField(max_length=100, unique=True)
+    docker_name = models.CharField(max_length=100, primary_key=True)
     description = models.TextField()
     tags = models.ManyToManyField(Tag)
     level = models.PositiveIntegerField()
@@ -31,26 +31,40 @@ class LearningPath(models.Model):
 class GameUser(models.Model):
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-    vnc_port = models.PositiveIntegerField()
+    vnc_port = models.PositiveIntegerField(null=True)
 
 
 class Shassaro(models.Model):
     goals = JSONField()  # JSON-serialized (text) version of the goals
     participants = models.ManyToManyField(GameUser)
-    shassaro_ip = models.GenericIPAddressField()
-    docker_server_ip = models.GenericIPAddressField()
-    docker_id = models.CharField(max_length=100)
+    shassaro_ip = models.GenericIPAddressField(null=True)
+    docker_server_ip = models.GenericIPAddressField(null=True)
+    docker_id = models.CharField(max_length=100, null=True)
+    docker_name = models.CharField(max_length=1000, null=True)
+
+
+class GameRequestStatus(models.Model):
+    status = models.CharField(max_length=100, primary_key=True)
+    message = models.CharField(max_length=1000)
 
 
 class Game(models.Model):
-    group1 = models.ManyToManyField(User, related_name='group1')
-    group2 = models.ManyToManyField(User, related_name='group2')
+    userA = models.CharField(max_length=100)
+    userB = models.CharField(max_length=100)
     computer = models.BooleanField(default=False)
     images = models.ManyToManyField(Image)
     shassaros = models.ManyToManyField(Shassaro)
-    start_time = models.DateTimeField()
-    goals_completed = JSONField()
-    duration_minutes = models.PositiveIntegerField()
+    start_time = models.DateTimeField(null=True)
+    goals_completed = JSONField(null=True)
+    duration_minutes = models.PositiveIntegerField(null=True)
+
+
+class GameRequest(models.Model):
+    username = models.CharField(max_length=100, primary_key=True)
+    tags = models.ManyToManyField(Tag)
+    submitted_at = models.DateTimeField()
+    status = models.ForeignKey(GameRequestStatus)
+    game = models.ManyToManyField(Game)
 
 
 class GameResult(models.Model):
@@ -74,7 +88,7 @@ class DockerManager(models.Model):
     name = models.CharField(max_length=100, unique=True)
     ip = models.GenericIPAddressField(unique=True)
     port = models.PositiveIntegerField()
-    url = models.CharField(max_length=100, default="")
+    url = models.CharField(max_length=100, default="/")
 
 
 class DockerServer(models.Model):

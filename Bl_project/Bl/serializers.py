@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from models import *
 
-__author__ = 'assaf'
-
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -13,7 +11,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Image
-        fields = ('pk', 'docker_name', 'description', 'tags', 'level', 'allow_in_game', 'hints',
+        fields = ('docker_name', 'description', 'tags', 'level', 'allow_in_game', 'hints',
                   'goal_description', 'post_script_name', 'duration_minutes')
 
 
@@ -22,6 +20,16 @@ class LearningPathSerializer(serializers.HyperlinkedModelSerializer):
         model = LearningPath
         fields = ('pk', 'subject', 'images', 'color', 'description')
 
+
+class GameRequestSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = GameRequest
+        fields = ('username', 'tags', 'submitted_at', 'status', 'game')
+
+class GameRequestStatusSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = GameRequestStatus
+        fields = ('status', 'message')
 
 class GameUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -32,13 +40,13 @@ class GameUserSerializer(serializers.HyperlinkedModelSerializer):
 class ShassaroSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Shassaro
-        fields = ('pk', 'goals', 'participants', 'shassaro_ip', 'docker_server_ip', 'docker_id')
+        fields = ('pk', 'goals', 'participants', 'shassaro_ip', 'docker_server_ip', 'docker_id', 'docker_name')
 
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Game
-        fields = ('pk', 'group1', 'group2', 'computer', 'images', 'shassaros', 'start_time', 'goals_completed',
+        fields = ('pk', 'userA', 'userB', 'computer', 'images', 'shassaros', 'start_time', 'goals_completed',
                   'duration_minutes')
 
 
