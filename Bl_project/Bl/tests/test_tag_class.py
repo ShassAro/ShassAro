@@ -1,3 +1,4 @@
+from Bl.tests.LoginAPITestCase import LoginAPITestCase
 from django.core.urlresolvers import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -6,8 +7,17 @@ from rest_framework.test import APITestCase
 __author__ = 'shay'
 
 
-class TagTests(APITestCase):
+class TagTests(LoginAPITestCase):
+
+    #def runTest(self):
+    #    pass
+
     def create_tag(self, name, description):
+        """
+        Get a name and a description, and use them to create the request_data json.
+        Take that request_data and post it to /tags/.
+        Return both the request_data and the response from performing the post.
+        """
         request_data = {"name": name, "description": description}
         return request_data, self.client.post('/tags/', request_data, format='json')
 
