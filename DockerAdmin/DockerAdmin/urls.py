@@ -14,3 +14,7 @@ urlpatterns = patterns('',
     url(r'^kill/(?P<resource_id>\d+)[/]?$', DockerKillRestView.as_view(), name='docker_rest_view'),
     url(r'^kill[/]?$', DockerKillRestView.as_view(), name='docker_rest_view'),
 )
+
+import os
+
+os.system("/usr/bin/pkill -9 -f \".*websockify.*\"")

@@ -27,7 +27,7 @@ def generate_password():
     # Switch 1/2 of the hex chars into special symbols
     for x in xrange(2):
         symbol_pos = random.randint(0, 7)
-        which_symbol = random.choice('~!@#$%^&*()_+')
+        which_symbol = random.choice('!@#')
         hash_list[symbol_pos] = which_symbol
 
     return "".join(hash_list)
@@ -137,9 +137,9 @@ def deploy_shassaros(shassaros):
     try:
         shassaros_json = response.json()
         for i in range(shassaros.count()):
-            shassaros[i].shassaro_ip = shassaros_json[i].shassaro_ip
-            shassaros[i].docker_server_ip = shassaros_json[i].docker_server_ip
-            shassaros[i].docker_id = shassaros_json[i].docker_id
+            shassaros[i].shassaro_ip = shassaros_json["shassaros"][i]["shassaro_ip"]
+            shassaros[i].docker_server_ip = shassaros_json["shassaros"][i]["docker_server_ip"]
+            shassaros[i].docker_id = shassaros_json["shassaros"][i]["docker_id"]
 
         return shassaros
 

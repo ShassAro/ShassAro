@@ -107,8 +107,8 @@ class GameRequestViewSet(ModelViewSet):
             game_request.save()
             match.save()
 
-            game_request.game = created_game
-            match.game = created_game
+            game_request.game.add(created_game)
+            match.game.add(created_game)
             game_request.save()
             match.save()
 
@@ -120,7 +120,7 @@ class GameRequestViewSet(ModelViewSet):
                 game_request.save()
             except Exception as inner:
                 pass
-            return Response(data=e.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(data=e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class GameRequestStatusViewSet(ModelViewSet):

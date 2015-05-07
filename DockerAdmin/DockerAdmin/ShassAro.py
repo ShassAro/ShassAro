@@ -1,6 +1,7 @@
 __author__ = 'roir'
 from rest_framework import serializers
 from GameUser import GameUserSerializer
+from jsonfield import JSONField
 
 class ShassAro():
 
@@ -13,9 +14,13 @@ class ShassAro():
         self.docker_name = docker_name
 
 
+class ListFieldSerializer(serializers.ListField):
+    child = serializers.CharField()
+
+
 class ShassaroSerializer(serializers.Serializer):
-        goals = serializers.ListField()
-        participants = GameUserSerializer(many=True)
+        goals = ListFieldSerializer()
+        participants = GameUserSerializer()
         shassaro_ip = serializers.CharField()
         docker_server_ip = serializers.CharField()
         docker_id = serializers.CharField()

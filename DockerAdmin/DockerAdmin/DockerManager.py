@@ -1,5 +1,7 @@
+import json
 import subprocess
 from threading import Thread
+from django.core import serializers
 
 __author__ = 'roir'
 
@@ -50,6 +52,11 @@ class DockerDeploy():
         try:
             # Initialize counter
             counter=1
+
+            # Serialize goals - Sorry for future us
+            self.shassarosContainer.shassaros[0].goals = json.loads("{\"goals\":" + self.shassarosContainer.shassaros[0].goals + "}")["goals"]
+            self.shassarosContainer.shassaros[0].goals = json.loads("{\"goals\":" + self.shassarosContainer.shassaros[1].goals + "}")["goals"]
+
 
             # Populate goal environment variables for image1
             for currGoal in self.shassarosContainer.shassaros[0].goals:
@@ -139,8 +146,8 @@ class DockerDeploy():
         except Exception as e:
 
             # Kill shassaro instances
+            DockerKill(self.docker_server, self.shassarosContainer.shassaros[0].docker_id).kill()
             DockerKill(self.docker_server, self.shassarosContainer.shassaros[1].docker_id).kill()
-            DockerKill(self.docker_server, self.shassarosContainer.shassaros[2].docker_id).kill()
 
             raise ShassAroException("Could not start image1 . Exception: " + str(e))
 
@@ -157,14 +164,14 @@ class DockerDeploy():
         except Exception as e:
 
             # Kill shassaro instances
+            DockerKill(self.docker_server, self.shassarosContainer.shassaros[0].docker_id).kill()
             DockerKill(self.docker_server, self.shassarosContainer.shassaros[1].docker_id).kill()
-            DockerKill(self.docker_server, self.shassarosContainer.shassaros[2].docker_id).kill()
 
             raise ShassAroException("Could not start image2 . Exception: " + str(e))
 
         # Create two threads that runs puppet
-        t1 = Thread(target=self.executeDocker1())
-        t2 = Thread(target=self.executeDocker2())
+        t1 = Thread(target=self.executeDocker1)
+        t2 = Thread(target=self.executeDocker2)
 
         # Start the threads
         t1.start()
@@ -193,8 +200,8 @@ class DockerDeploy():
         except Exception as e:
 
             # Kill shassaro instances
+            DockerKill(self.docker_server, self.shassarosContainer.shassaros[0].docker_id).kill()
             DockerKill(self.docker_server, self.shassarosContainer.shassaros[1].docker_id).kill()
-            DockerKill(self.docker_server, self.shassarosContainer.shassaros[2].docker_id).kill()
 
             raise ShassAroException("Could not start websocket to image1. Exception: " + str(e))
 
@@ -217,8 +224,8 @@ class DockerDeploy():
         except Exception as e:
 
             # Kill shassaro instances
+            DockerKill(self.docker_server, self.shassarosContainer.shassaros[0].docker_id).kill()
             DockerKill(self.docker_server, self.shassarosContainer.shassaros[1].docker_id).kill()
-            DockerKill(self.docker_server, self.shassarosContainer.shassaros[2].docker_id).kill()
 
             raise ShassAroException("Could not start websocket to image2. Exception: " + str(e))
 
