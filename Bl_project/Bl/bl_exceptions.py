@@ -14,6 +14,15 @@ class DeployError(BlException):
         super(DeployError, self).__init__(msg)
 
 
+class KillError(BlException):
+    def __init__(self, error_message, exception=None):
+        msg = "Kill failed: {0}".format(error_message)
+        if exception is not None and isinstance(exception, Exception):
+            msg += "{0}InnerException: {1}".format(os.linesep, exception)
+
+        super(KillError, self).__init__(msg)
+
+
 class DockerManagerNotAvailableError(BlException):
     def __init__(self):
         super(DockerManagerNotAvailableError, self).__init__("No Docker Manager servers are configured. C'mon...")

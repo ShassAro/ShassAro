@@ -2,6 +2,7 @@ from datetime import datetime
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions
+from end_game import end_game
 from serializers import *
 from models import *
 from create_game import *
@@ -142,9 +143,15 @@ class CreateGame():
             for i in range(2):
                 shassaro = generate_initial_shassaro(participants[i], images[i])
                 game.shassaros.add(shassaro)
+                game.images.add(images[i])
 
             # deploy the shassaros
             deploy_shassaros(game.shassaros.all())
+
+            # Fill out game
+            game.start_time = datetime.now()
+            game.userA = participants[0]
+            game.userB = participants[1]
 
             # save to db and return
             game.save()
