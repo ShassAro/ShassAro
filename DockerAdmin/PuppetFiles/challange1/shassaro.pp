@@ -27,7 +27,7 @@ define shassaro::user($user = $title, $password) {
 		managehome => true,
 		groups => ["shassaro"],
 		require => Group["shassaro"],
-		password => generate('/bin/sh', '-c', "openssl passwd -1 ${goal1} | tr -d '\n'"),
+		password => generate('/bin/sh', '-c', "openssl passwd -1 ${password} | tr -d '\n'"),
 	}
 }
 
