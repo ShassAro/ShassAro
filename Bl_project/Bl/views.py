@@ -144,7 +144,7 @@ class CreateGame():
                 game.shassaros.add(shassaro)
 
             # deploy the shassaros
-            game.shassaros = deploy_shassaros(game.shassaros.all())
+            deploy_shassaros(game.shassaros.all())
 
             # save to db and return
             game.save()

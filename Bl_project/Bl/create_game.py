@@ -141,6 +141,13 @@ def deploy_shassaros(shassaros):
             shassaros[i].docker_server_ip = shassaros_json["shassaros"][i]["docker_server_ip"]
             shassaros[i].docker_id = shassaros_json["shassaros"][i]["docker_id"]
 
+            # Getting the vncport. using the first, because we currently suport only one user
+            user_temp_obj = shassaros[i].participants.first()
+            user_temp_obj.vnc_port = int(shassaros_json["shassaros"][i]["participants"]["vnc_port"])
+            user_temp_obj.save()
+
+            shassaros[i].save()
+
         return shassaros
 
     except Exception as e:
