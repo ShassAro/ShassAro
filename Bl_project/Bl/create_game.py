@@ -12,8 +12,8 @@ def generate_goal():
     Generates a random hash (128 bits)
     :return: Hex value of the hash
     """
-    hash_string = random.getrandbits(128)
-    return '%032x' % hash_string
+    hash_string = random.getrandbits(32)
+    return '%08x' % hash_string
 
 
 def generate_password():

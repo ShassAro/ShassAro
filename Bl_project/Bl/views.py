@@ -13,31 +13,31 @@ from django.db.models import Q
 class TagViewSet(ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class ImageViewSet(ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class LearningPathViewSet(ModelViewSet):
     queryset = LearningPath.objects.all()
     serializer_class = LearningPathSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class GameUserViewSet(ModelViewSet):
     queryset = GameUser.objects.all()
     serializer_class = GameUserSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class ShassaroViewSet(ModelViewSet):
     queryset = Shassaro.objects.all()
     serializer_class = ShassaroSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class GameRequestStatuses:
@@ -58,7 +58,7 @@ class GameRequestViewSet(ModelViewSet):
         return GameRequestStatus.objects.get(status=status)
 
     def pick_best_image(self, tags_user1, tags_user2):
-        return ("shassaro/challenge1", "shassaro/challenge2")
+        return ("shassaro/challenge1", "shassaro/challenge1")
 
     def create(self, request, *args, **kwargs):
 
@@ -166,38 +166,113 @@ class CreateGame():
 class GameViewSet(ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class GameResultViewSet(ModelViewSet):
     queryset = GameResult.objects.all()
     serializer_class = GameResultSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class BadgeViewSet(ModelViewSet):
     queryset = Badge.objects.all()
     serializer_class = BadgeSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class DockerManagerViewSet(ModelViewSet):
     queryset = DockerManager.objects.all()
     serializer_class = DockerManagerSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class DockerServerViewSet(ModelViewSet):
     queryset = DockerServer.objects.all()
     serializer_class = DockerServerSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 
 class ConfigurationsViewSet(ModelViewSet):
     queryset = Configurations.objects.all()
     serializer_class = ConfigurationsSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
+class ActiveGameGoalCheckViewSet(APIView):
+
+    def get(self, request, *args, **kw):
+
+        # Get the username from GET
+        username = kw["username"]
+        user_index = 0
+
+        # Get the game object. Try userA first.
+        gameObj = Game.objects.filter(userA=username)
+
+        if (len(gameObj) == 0):
+
+            # Lets try userB
+            gameObj = Game.objects.filter(userB=username)
+            user_index = 1
+
+        # If none found -> game is over. return gameresult.
+        if (len(gameObj) == 0):
+
+            returnJson = {
+                "status" : False,
+                "all_completed" : False
+            }
+
+            # Redirect to gameresult to the last game of all
+            return Response(returnJson, status=status.HTTP_200_OK)
+
+        try:
+            goal_hash = request.GET["hash"]
+        except:
+            return Response("Expecting querystring names hash.. /?hash=1234")
+
+        found = False
+        finished = False
+
+        for goal in gameObj[0].shassaros.all()[user_index].goals:
+            if (goal_hash == goal):
+
+                currShassaro = gameObj[0].shassaros.all()[user_index]
+                if (currShassaro.goals_completed == None):
+
+                    currShassaro.goals_completed = {goal : True}
+                    found = True
+
+                else:
+                    goalAdded = None
+                    for currIndex in currShassaro.goals_completed:
+                        if (goal != currIndex):
+                            goalAdded = goal
+                            found = True
+
+                    if (goalAdded != None):
+                        currShassaro.goals_completed[goal] = True
+
+                currShassaro.save()
+
+                if (len(currShassaro.goals_completed) == len(gameObj[0].shassaros.all()[user_index].goals)):
+
+                    other_username = None
+
+                    if(user_index == 0):
+                        other_username = gameObj[0].userB
+                    else:
+                        other_username = gameObj[0].userA
+
+                    end_game(gameObj[0], username, other_username)
+                    finished = True
+
+        returnJson = {
+            "status" : found,
+            "all_completed" : finished
+        }
+
+        return Response(returnJson, status=status.HTTP_200_OK)
 
 class ActiveGameViewSet(APIView):
 
@@ -245,3 +320,4 @@ class ActiveGameViewSet(APIView):
         }
 
         return Response(returnJson, status=status.HTTP_200_OK)
+

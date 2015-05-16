@@ -41,7 +41,7 @@ class Shassaro(models.Model):
     docker_server_ip = models.GenericIPAddressField(null=True)
     docker_id = models.CharField(max_length=100, null=True)
     docker_name = models.CharField(max_length=1000, null=True)
-
+    goals_completed = JSONField(null=True)
 
 class GameRequestStatus(models.Model):
     status = models.CharField(max_length=100, primary_key=True)
@@ -55,7 +55,6 @@ class Game(models.Model):
     images = models.ManyToManyField(Image)
     shassaros = models.ManyToManyField(Shassaro)
     start_time = models.DateTimeField(null=True)
-    goals_completed = JSONField(null=True)
     duration_minutes = models.PositiveIntegerField(null=True)
 
 

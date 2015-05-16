@@ -26,7 +26,7 @@ def init_data():
     docker_server = DockerServer(name="primary", protocol="http", ip="127.0.0.1", port="4243")
     docker_server.save()
 
-    docker_mgr = DockerManager(name="docker-manager", ip="localhost", port="8000")
+    docker_mgr = DockerManager(name="docker-manager", ip="10.0.0.7", port="8000")
     docker_mgr.save()
 
     for i in ["shay", "assaf", "roi", "sheker", "beker", "bla", "tahat", "tusik"]:
