@@ -58,7 +58,7 @@ class GameRequestViewSet(ModelViewSet):
         return GameRequestStatus.objects.get(status=status)
 
     def pick_best_image(self, tags_user1, tags_user2):
-        return ("shassaro/challenge1", "shassaro/challenge1")
+        return ("shassaro/challenge1", "shassaro/challenge2")
 
     def create(self, request, *args, **kwargs):
 
