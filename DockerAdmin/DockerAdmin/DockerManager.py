@@ -344,7 +344,7 @@ class DockerDeploy():
         while (toSearch):
 
             # Generate a random port number
-            tempPort = randint(10000, 40000)
+            tempPort = randint(40000, 40500)
 
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             result = sock.connect_ex(("127.0.0.1", tempPort))
