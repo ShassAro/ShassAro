@@ -43,7 +43,16 @@ class ShassaroSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('pk', 'goals', 'participants', 'shassaro_ip', 'docker_server_ip', 'docker_id', 'docker_name')
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+
+
 class GameSerializer(serializers.HyperlinkedModelSerializer):
+
+    images = ImageSerializer(many=True)
+
     class Meta:
         model = Game
         fields = ('pk', 'userA', 'userB', 'computer', 'images', 'shassaros', 'start_time', 'goals_completed',
@@ -51,6 +60,10 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class GameResultSerializer(serializers.HyperlinkedModelSerializer):
+
+    losing_users = UserSerializer(many=True)
+    winning_users = UserSerializer(many=True)
+
     class Meta:
         model = GameResult
         fields = ('pk', 'losing_users', 'winning_users', 'computer', 'start_time', 'actual_duration_minutes', 'tags',
