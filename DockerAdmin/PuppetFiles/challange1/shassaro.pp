@@ -50,7 +50,7 @@ create_resources(shassaro::vnc, $hashUsers)
 $vnc_user = {
 
 	'user' => keys($hashUsers), # Only one user!!!
-	'args' => '',
+	'args' => '-geometry 1280x720',
 }
 
 # Declare the vnc class
