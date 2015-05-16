@@ -26,5 +26,6 @@ urlpatterns = patterns('',
     url(r'^', include(router.urls)),
     url(r'^docker-admin-mock/deploy/$', docker_admin_mocked_views.deploy),
     #url(r'^admin/', include(admin.site.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^active_game/(?P<username>\w+)/$', views.ActiveGameViewSet.as_view(), name="active_game")
 )

@@ -32,10 +32,10 @@ def end_game(game_obj, username_winner, username_loser):
     docker_manager_url += "kill"
 
     # Send the kill!
-  #  response = requests.post(docker_manager_url, json=kill_json)
+    response = requests.post(docker_manager_url, json=kill_json)
 
-   # if response.status_code != status.HTTP_200_OK:
-   #     raise KillError("status_code:{0} response:{1}".format(response.status_code, response.text))
+    if response.status_code != status.HTTP_200_OK:
+        raise KillError("status_code:{0} response:{1}".format(response.status_code, response.text))
 
     # Lets create a game result!
     game_result = GameResult()
