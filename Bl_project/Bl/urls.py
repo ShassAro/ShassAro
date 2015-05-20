@@ -28,5 +28,8 @@ urlpatterns = patterns('',
     #url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^active_game/(?P<username>\w+)/$', views.ActiveGameViewSet.as_view(), name="active_game"),
-    url(r'^active_game/(?P<username>\w+)/goal', views.ActiveGameGoalCheckViewSet.as_view(), name="active_game_goal_check")
+    url(r'^active_game/(?P<username>\w+)/goal', views.ActiveGameGoalCheckViewSet.as_view(), name="active_game_goal_check"),
+    url(r'^users/$', views.UserList.as_view()),
+    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
+    url(r'^users/register/$', views.UserRegisterViewSet.as_view())
 )

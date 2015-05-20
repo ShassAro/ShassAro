@@ -1,5 +1,7 @@
 from datetime import datetime
 from django.shortcuts import redirect
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -298,7 +300,7 @@ class ActiveGameViewSet(APIView):
             allGames = GameResult.objects.filter(Q(losing_users__username=username  ) | Q(winning_users__username=username))
 
             # Redirect to gameresult to the last game of all
-            return redirect("/game_results/{0}".format(allGames.order_by("-start_time")[0].pk))
+            return redirect("/game_results/{0}".format(allGames.order_by("-start_time")[0].pk), permanent=False)
 
         # Assume two user have different images
         image_index = user_index
@@ -321,3 +323,37 @@ class ActiveGameViewSet(APIView):
 
         return Response(returnJson, status=status.HTTP_200_OK)
 
+
+class UserList(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserRegisterViewSet(APIView):
+
+    def post(self, request, *args, **kw):
+
+        try:
+            username = request.DATA['username']
+            password = request.DATA['password']
+            email = request.DATA['email']
+
+        except Exception as e:
+            return Response("Accepted json fields: username, password, email", status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User()
+            user.username = username
+            user.set_password(password)
+            user.email = email
+            user.save()
+
+            return Response("User created! Gotta Beat Them'all!", status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response(data=e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
