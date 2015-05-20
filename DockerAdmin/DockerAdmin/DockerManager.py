@@ -55,7 +55,7 @@ class DockerDeploy():
 
             # Serialize goals - Sorry for future us
             self.shassarosContainer.shassaros[0].goals = json.loads("{\"goals\":" + self.shassarosContainer.shassaros[0].goals + "}")["goals"]
-            self.shassarosContainer.shassaros[0].goals = json.loads("{\"goals\":" + self.shassarosContainer.shassaros[1].goals + "}")["goals"]
+            self.shassarosContainer.shassaros[1].goals = json.loads("{\"goals\":" + self.shassarosContainer.shassaros[1].goals + "}")["goals"]
 
 
             # Populate goal environment variables for image1
