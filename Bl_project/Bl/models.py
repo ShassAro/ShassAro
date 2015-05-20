@@ -3,6 +3,9 @@ from jsonfield import JSONField
 from django.db import models
 
 
+class Quotes(models.Model):
+    quote = models.TextField()
+
 class Tag(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
     description = models.TextField()

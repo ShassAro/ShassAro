@@ -357,3 +357,10 @@ class UserRegisterViewSet(APIView):
 
         except Exception as e:
             return Response(data=e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class QuotesViewSet(APIView):
+
+    def get(self, request, *args, **kw):
+        quote = Quotes.objects.order_by("?").first()
+        return Response(quote.quote, status=status.HTTP_200_OK)

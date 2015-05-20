@@ -93,3 +93,9 @@ class ConfigurationsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Configurations
         fields = ('pk', 'docker_server')
+
+
+class QuotesSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Quotes
+        fields = ('pk', 'quote')
