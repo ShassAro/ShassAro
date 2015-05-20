@@ -231,10 +231,13 @@ class ActiveGameGoalCheckViewSet(APIView):
         try:
             goal_hash = request.GET["hash"]
         except:
-            return Response("Expecting querystring names hash.. /?hash=1234")
+            return Response("Expecting querystring named hash.. /?hash=1234")
 
         found = False
         finished = False
+
+        # We need to cross the users goals check.
+        user_index = abs(user_index-1)
 
         for goal in gameObj[0].shassaros.all()[user_index].goals:
             if (goal_hash == goal):
