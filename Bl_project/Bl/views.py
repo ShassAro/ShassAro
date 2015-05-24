@@ -65,7 +65,27 @@ class GameRequestViewSet(ModelViewSet):
         return GameRequestStatus.objects.get(status=status)
 
     def pick_best_image(self, tags_user1, tags_user2):
-        return ("shassaro/challenge1", "shassaro/challenge1")
+
+        queries = [Q(tags__name=value.name) for value in tags_user1.all()]
+        query = queries.pop()
+
+        for item in queries:
+            query |= item
+
+        # User 1 tags defines user 2 image
+        user2_image = Image.objects.filter(query).order_by("?").first()
+
+        queries = [Q(tags__name=value.name) for value in tags_user2.all()]
+        query = queries.pop()
+
+        for item in queries:
+            query |= item
+
+        # User 1 tags defines user 2 image
+        user1_image = Image.objects.filter(query).order_by("?").first()
+
+
+        return (user1_image.docker_name, user2_image.docker_name)
 
     def create(self, request, *args, **kwargs):
 
@@ -98,7 +118,7 @@ class GameRequestViewSet(ModelViewSet):
 
             match = GameRequest.objects.\
                 filter(status=GameRequestStatus.objects.get(status=GameRequestStatuses.WAITING)).\
-                exclude(username=username)
+                exclude(username=username).order_by("submitted_at")
 
             if (len(match) == 0):
 
@@ -111,7 +131,7 @@ class GameRequestViewSet(ModelViewSet):
 
             # Get the images
             picked_images = [Image.objects.get(docker_name=image_name) for
-                             image_name in self.pick_best_image(tags, match.tags)]
+                             image_name in self.pick_best_image(game_request.tags, match.tags)]
 
 
             game_request.status = self.get_a_game_request_status(GameRequestStatuses.DEPLOYING)
