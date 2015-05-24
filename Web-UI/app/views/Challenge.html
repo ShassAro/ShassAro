@@ -1,0 +1,39 @@
+<h1>So you wanna challenge..?</h1>
+
+
+<form>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Pick some challenging tags</h3></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group-lg">
+                <label for="tag1">Tag #1</label>
+                <select class="form-control" name="tag1" id="tag1"
+                        ng-model="tag1"
+                        ng-options="tag.name for tag in tags"></select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group-lg">
+                <label for="tag2">Tag #2</label>
+                <select class="form-control" name="tag2" id="tag2"
+                        ng-model="tag2"
+                        ng-options="tag.name for tag in tags"></select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <hr/>
+        <div class="col-md-12 text-center">
+            <p>
+                <button class="btn btn-lg btn-block btn-warning" type="submit" ng-click="makeGameRequest()">
+                    Chanlleng Me!!!
+                    <span class="glyphicon glyphicon-star" style="margin-left: 10px"></span>
+                </button>
+            </p>
+        </div>
+    </div>
+</form>
+</div>

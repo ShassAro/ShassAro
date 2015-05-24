@@ -1,0 +1,32 @@
+<div>
+    <h1 class="text-center">Challenge Accpeted!</h1>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12 text-center">
+                <div class="preloader-spinner"></div>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-4 col-md-push-4">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped active"
+                     ng-class="{'progress-bar-warning': currentStatus==statusNames[0],'progress-bar-info': currentStatus==statusNames[1],'progress-bar-success': currentStatus==statusNames[2]}"
+                     role="progressbar" aria-valuenow="{{percentComplete}}"
+                     aria-valuemin="0" aria-valuemax="100" style="width: {{percentComplete}}%;">
+                    {{currentStep}}/3
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-repeat="stepName in statusNames" class="row" ng-if="$index < currentStep">
+        <div class="col-md-10 col-md-push-1 text-primary">
+            <h3 ng-class="{'text-warning':stepsInfo[$index].status == statusNames[0],'text-info':stepsInfo[$index].status == statusNames[1],'text-success':stepsInfo[$index].status == statusNames[2]}">
+
+                <span ng-if="stepsInfo[$index].step == currentStep" class="glyphicon glyphicon-unchecked"></span>
+                <span ng-if="stepsInfo[$index].step < currentStep" class="glyphicon glyphicon-check"></span>
+
+                {{stepsInfo[$index].message}}</h3>
+        </div>
+    </div>
+</div>

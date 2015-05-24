@@ -1,0 +1,54 @@
+<div class="row" ng-if="dockerConnectionError==true">
+    <div class="col-md-12 text-center">
+        <h1>SHIT!</h1>
+        <img src="img/happy-poop-emoticon-d76052797.png" width="150" alt=""/>
+        <h2>We had serious problems getting your challenge up...</h2>
+    </div>
+</div>
+<div class="row" ng-if="isConnected==false && dockerConnectionError == false;">
+    <div class="col-md-12 text-center text-info" style="padding-top: 15%;">
+        <div class="preloader-spinner"></div>
+        <h2>Loading your environment</h2>
+    </div>
+</div>
+<div class="row" ng-if="isConnected==true;">
+    <div class="col-md-9">
+        <vnc ng-init="display = { scale:0.7, width: 860, fitTo:'width' };"
+             host="{{vncHost}}" port="{{vncPort}}" password="{{vncPassword}}"
+             is-connected="isConnected" display="display">
+        </vnc>
+    </div>
+    <div class="col-md-3">
+        <form novalidate class="form-horizontal">
+            <div class="form-group-sm" ng-repeat="goal in goals track by $index">
+                <label for="goal-{{$index}}" class="control-label">Goal {{$index+1}}</label>
+                <div class="input-group">
+                    <input type="text" ng-disabled="goal.completed" ng-class="goal.completed === true ? 'goal-completed' : 'goal-wrong'" ng-minlength="8" ng-change="verifyGoal(goal)" ng-model="goal.hash" id="goal-{{$index}}"
+                           class="form-control" placeholder="Insert Goal #{{$index+1}} here..."/>
+                    <span class="input-group-btn">
+                        <button class="btn btn-sm btn-success" disabled ng-if="goal.completed"><span class="glyphicon glyphicon-check"></span></button>
+                        <button class="btn btn-sm btn-default" ng-init="goal.hintCollapsed=true" ng-click="goal.hintCollapsed = !goal.hintCollapsed">
+                            <span class="glyphicon glyphicon-info-sign"></span>
+                        </button>
+                        <button class="btn btn-sm btn-primary" ng-init="goal.descriptionCollapsed=true" ng-click="goal.descriptionCollapsed = !goal.descriptionCollapsed">
+                            <span class="gi gi-lightbulb"></span>
+                        </button>
+                    </span>
+                </div>
+                <div collapse="goal.descriptionCollapsed">
+                    <p><div class="alert alert-info small"><strong>Goal Hint:</strong> {{goal.hint}}</div></p>
+                </div>
+                <div collapse="goal.hintCollapsed">
+                    <p><div class="alert alert-info small"><strong>Goal Description:</strong> {{goal.description}}</div></p>
+                </div>
+            </div>
+            <hr/>
+            <br/>
+            <div class="panel panel-default small">
+                <div class="panel-heading">
+                    <strong>Opponent's IP</strong> {{opponentIP}}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="js/vendor/js.cookie.js"></script>
+<script src="js/vendor/ws4redis.js"></script>
+<script>
+    var host_url = '192.168.2.111:1234';
+
+    function getCookie(c_name) {
+        if (document.cookie.length > 0) {
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1) {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1) c_end = document.cookie.length;
+                return unescape(document.cookie.substring(c_start, c_end));
+            }
+        }
+        return "";
+    }
+
+    $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+        options.crossDomain ={
+            crossDomain: true
+        };
+        options.xhrFields = {
+            withCredentials: true
+        };
+    });
+
+    $.ajax({
+        method: 'GET',
+        url: 'http://' + host_url + '/',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader ("Authorization", "Basic " + btoa('blabla:blabla'));
+        },
+        success: function () {
+
+//            var receiveMessage = function () {
+//                console.log(arguments);
+//            };
+//
+//            var ws4redis = WS4Redis({
+//                uri: 'ws://blabla:blabla@' + host_url + '/ws/status?subscribe-user',
+//                receive_message: receiveMessage
+//            });
+
+            var ws = new WebSocket('ws://'+host_url+'/ws/blabla?subscribe-broadcast');
+            ws.onopen = function () {
+                console.log(arguments);
+                console.log("websocket connected");
+            };
+            ws.onmessage = function (e) {
+                console.log("Received: " + e.data);
+            };
+            ws.onerror = function (e) {
+                console.error(e);
+            };
+            ws.onclose = function (e) {
+                console.log("connection closed");
+            };
+            function send_message(msg) {
+                ws.send(msg);
+            };
+
+            var ws2 = new WebSocket('ws://'+host_url+'/ws/blabla2?subscribe-broadcast');
+            ws2.onopen = function () {
+                console.log(arguments);
+                console.log("websocket connected");
+            };
+            ws2.onmessage = function (e) {
+                console.log("Received: " + e.data);
+            };
+            ws2.onerror = function (e) {
+                console.error(e);
+            };
+            ws2.onclose = function (e) {
+                console.log("connection closed");
+            };
+//            function send_message(msg) {
+//                ws.send(msg);
+//            };
+
+        },
+        error: function (xhr) {
+            var forbiden = xhr.status == 403;
+
+            console.log(forbiden);
+        }
+    });
+
+
+//    $.ajax({
+//        method: 'POST',
+//        url: 'http://' + host_url + '/api-auth/login/',
+//        username: 'blabla',
+//        password: 'blabla'
+//    })
+//    .success(function () {
+////                var ws4redis = WS4Redis({
+////                    uri: 'ws://'+host_url+'/ws/status?subscribe-user',
+////                    receive_message: recieveMessage
+////                });
+////
+////
+////                return;
+//
+//                console.log(arguments);
+//
+//                var ws = new WebSocket('ws://'+host_url+'/ws/status?subscribe-user&publish-user&echo');
+//                ws.onopen = function () {
+////                    console.log(arguments);
+//                    console.log("websocket connected");
+//                };
+//                ws.onmessage = function (e) {
+//                    console.log("Received: " + e.data);
+//                };
+//                ws.onerror = function (e) {
+//                    console.error(e);
+//                };
+//                ws.onclose = function (e) {
+//                    console.log("connection closed");
+//                };
+//                function send_message(msg) {
+//                    ws.send(msg);
+//                };
+//            });
+</script>
+
+</body>
+</html>
