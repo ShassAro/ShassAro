@@ -1,5 +1,16 @@
 from models import *
+import socket, fcntl, struct
 
+# Magic. Don't touch.
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,         # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+# Initialize all test data
 def init_data():
     tag1 = Tag(name="SQL", description="Tahat")
     tag1.save()
@@ -16,23 +27,26 @@ def init_data():
     status = GameRequestStatus(status="ERROR", message="Sorry... no challenges for you today :(")
     status.save()
 
-    img = Image(docker_name="shassaro/challenge1", description="POC image", level=1, allow_in_game=True, hints=["Try to tahat (not too much tahat)", "Keep that in mind. Tahat is the shit."], goal_description=['tahat','another-tahat'], duration_minutes=60)
-    img.save()
+    img_challenge1 = Image(docker_name="shassaro/challenge1", description="POC image", level=1, allow_in_game=True, hints=["Try to tahat (not too much tahat)", "Keep that in mind. Tahat is the shit."], goal_description=['tahat','another-tahat'], duration_minutes=60)
+    img_challenge1.save()
 
-    img = Image(docker_name="shassaro/challenge2", description="Reverse shell", level=1, allow_in_game=True, hints=["The bash version have not been updated in a while..", "Look at the website source.."], goal_description=['Find reverse shell!','Get the secret from the DB'], duration_minutes=60)
-    img.save()
+    img_challenge2 = Image(docker_name="shassaro/challenge2", description="Reverse shell", level=1, allow_in_game=True, hints=["The bash version have not been updated in a while..", "Look at the website source.."], goal_description=['Find reverse shell!','Get the secret from the DB'], duration_minutes=60)
+    img_challenge2.save()
 
+    img_challenge3 = Image(docker_name="shassaro/challenge3", description="FTP and Apache", level=1, allow_in_game=True, hints=["Can you login to the FTP server", "HTML is the source of all evil"], goal_description=['Get into the FTP server', 'Find the secret'], duration_minutes=60)
+    img_challenge3.save()
 
-    docker_server = DockerServer(name="primary", protocol="http", ip="127.0.0.1", port="4243")
+    own_ip = get_ip_address('eth0')
+
+    docker_server = DockerServer(name="primary", protocol="http", ip=own_ip, port="4243")
     docker_server.save()
 
-    docker_mgr = DockerManager(name="docker-manager", ip="10.0.0.7", port="8000")
+    docker_mgr = DockerManager(name="docker-manager", ip=own_ip, port="8000")
     docker_mgr.save()
 
     for i in ["shay", "assaf", "roi", "sheker", "beker", "bla", "tahat", "tusik"]:
         temp = User(username=i, email="{0}@shassaro.com".format(i))
         temp.save()
-
 
     quote = Quotes(quote="When Life Gives You Questions, Google has Answers.")
     quote.save()
