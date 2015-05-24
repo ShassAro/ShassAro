@@ -25,25 +25,25 @@ class TagViewSet(ModelViewSet):
 class ImageViewSet(ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class LearningPathViewSet(ModelViewSet):
     queryset = LearningPath.objects.all()
     serializer_class = LearningPathSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class GameUserViewSet(ModelViewSet):
     queryset = GameUser.objects.all()
     serializer_class = GameUserSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class ShassaroViewSet(ModelViewSet):
     queryset = Shassaro.objects.all()
     serializer_class = ShassaroSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class GameRequestStatuses:
@@ -59,6 +59,7 @@ class GameRequestStatuses:
 class GameRequestViewSet(ModelViewSet):
     queryset = GameRequest.objects.all()
     serializer_class = GameRequestSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_a_game_request_status(self, status):
         return GameRequestStatus.objects.get(status=status)
@@ -163,6 +164,7 @@ class GameRequestViewSet(ModelViewSet):
 class GameRequestStatusViewSet(ModelViewSet):
     queryset = GameRequestStatus.objects.all()
     serializer_class = GameRequestStatusSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class CreateGameError(Exception):
@@ -200,39 +202,41 @@ class CreateGame():
 class GameViewSet(ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class GameResultViewSet(ModelViewSet):
     queryset = GameResult.objects.all()
     serializer_class = GameResultSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class BadgeViewSet(ModelViewSet):
     queryset = Badge.objects.all()
     serializer_class = BadgeSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class DockerManagerViewSet(ModelViewSet):
     queryset = DockerManager.objects.all()
     serializer_class = DockerManagerSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class DockerServerViewSet(ModelViewSet):
     queryset = DockerServer.objects.all()
     serializer_class = DockerServerSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class ConfigurationsViewSet(ModelViewSet):
     queryset = Configurations.objects.all()
     serializer_class = ConfigurationsSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 class ActiveGameGoalCheckViewSet(APIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kw):
 
@@ -313,6 +317,8 @@ class ActiveGameGoalCheckViewSet(APIView):
 
 class ActiveGameViewSet(APIView):
 
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, *args, **kw):
 
         # Get the username from GET
@@ -360,13 +366,16 @@ class ActiveGameViewSet(APIView):
 
 
 class UserList(ListAPIView):
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class UserDetail(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class UserRegisterViewSet(APIView):
@@ -396,6 +405,7 @@ class UserRegisterViewSet(APIView):
 
 class QuotesViewSet(APIView):
 
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kw):
         quote = Quotes.objects.order_by("?").first()
