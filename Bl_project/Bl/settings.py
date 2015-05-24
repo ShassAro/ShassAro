@@ -38,8 +38,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'ws4redis',
     'Bl'
 )
+
+WEBSOCKET_URL = '/ws/'
 
 MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
@@ -54,8 +57,15 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'Bl.urls'
 
-WSGI_APPLICATION = 'Bl.wsgi.application'
+#WSGI_APPLICATION = 'Bl.wsgi.application'
+WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.static',
+    'ws4redis.context_processors.default',
+)
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -89,7 +99,9 @@ STATIC_URL = '/static/'
 CORS_ORIGIN_ALLOW_ALL = True
 
 #CORS_ORIGIN_WHITELIST = (
-#    'http://localhost:8000',
-#    'http://localhost:1234'
-#    'http://10.0.0.3'
+#    '192.168.2.109:63342',
+#    '192.168.2.109'
 #)
+
+
+CORS_ALLOW_CREDENTIALS = True

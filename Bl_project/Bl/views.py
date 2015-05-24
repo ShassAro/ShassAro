@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
@@ -11,35 +12,38 @@ from serializers import *
 from models import *
 from create_game import *
 from django.db.models import Q
+from ws4redis.publisher import RedisPublisher
+from ws4redis.redis_store import RedisMessage
+
 
 class TagViewSet(ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class ImageViewSet(ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class LearningPathViewSet(ModelViewSet):
     queryset = LearningPath.objects.all()
     serializer_class = LearningPathSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class GameUserViewSet(ModelViewSet):
     queryset = GameUser.objects.all()
     serializer_class = GameUserSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class ShassaroViewSet(ModelViewSet):
     queryset = Shassaro.objects.all()
     serializer_class = ShassaroSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class GameRequestStatuses:
@@ -55,6 +59,7 @@ class GameRequestStatuses:
 class GameRequestViewSet(ModelViewSet):
     queryset = GameRequest.objects.all()
     serializer_class = GameRequestSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_a_game_request_status(self, status):
         return GameRequestStatus.objects.get(status=status)
@@ -84,6 +89,11 @@ class GameRequestViewSet(ModelViewSet):
 
             game_request.save()
 
+
+            # Notify via websocket
+            user_publisher = RedisPublisher(facility=username, broadcast=True)
+            user_publisher.publish_message(RedisMessage(serializers.serialize("json",[game_request])))
+
             # Do we have another user? (thats not us..)
 
             match = GameRequest.objects.\
@@ -91,9 +101,13 @@ class GameRequestViewSet(ModelViewSet):
                 exclude(username=username)
 
             if (len(match) == 0):
+
                 return Response(data=serializers.serialize("json",[game_request]), status=status.HTTP_201_CREATED)
 
             match = match[0]
+
+            # Lets create websockets endpoint so we can communicate with the remote user also
+            remote_user_publisher = RedisPublisher(facility=match.username, broadcast=True)
 
             # Get the images
             picked_images = [Image.objects.get(docker_name=image_name) for
@@ -104,6 +118,10 @@ class GameRequestViewSet(ModelViewSet):
             match.status = self.get_a_game_request_status(GameRequestStatuses.DEPLOYING)
             game_request.save()
             match.save()
+
+            # Now we need to notify the users that we have found them a user, and their status is deploying
+            user_publisher.publish_message(RedisMessage(serializers.serialize("json",[game_request])))
+            remote_user_publisher.publish_message(RedisMessage(serializers.serialize("json",[match])))
 
             created_game = CreateGame.create([username, match.username], picked_images)
 
@@ -117,12 +135,27 @@ class GameRequestViewSet(ModelViewSet):
             game_request.save()
             match.save()
 
+            # And notify that its done
+            user_publisher.publish_message(RedisMessage(serializers.serialize("json",[game_request])))
+            remote_user_publisher.publish_message(RedisMessage(serializers.serialize("json",[match])))
+
             return Response(data=serializers.serialize("json",[game_request]), status=status.HTTP_201_CREATED)
 
         except Exception as e:
             try:
                 game_request.status = self.get_a_game_request_status(GameRequestStatuses.ERROR)
                 game_request.save()
+                match.status = self.get_a_game_request_status(GameRequestStatuses.ERROR)
+                match.save()
+
+                # Notify both users about an error
+                user_publisher.publish_message(RedisMessage(serializers.serialize("json",[game_request])))
+                remote_user_publisher.publish_message(RedisMessage(serializers.serialize("json",[match])))
+
+                # And delete the objects..
+                game_request.delete()
+                match.delete()
+
             except Exception as inner:
                 pass
             return Response(data=e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -131,6 +164,7 @@ class GameRequestViewSet(ModelViewSet):
 class GameRequestStatusViewSet(ModelViewSet):
     queryset = GameRequestStatus.objects.all()
     serializer_class = GameRequestStatusSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class CreateGameError(Exception):
@@ -168,39 +202,41 @@ class CreateGame():
 class GameViewSet(ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class GameResultViewSet(ModelViewSet):
     queryset = GameResult.objects.all()
     serializer_class = GameResultSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class BadgeViewSet(ModelViewSet):
     queryset = Badge.objects.all()
     serializer_class = BadgeSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class DockerManagerViewSet(ModelViewSet):
     queryset = DockerManager.objects.all()
     serializer_class = DockerManagerSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class DockerServerViewSet(ModelViewSet):
     queryset = DockerServer.objects.all()
     serializer_class = DockerServerSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class ConfigurationsViewSet(ModelViewSet):
     queryset = Configurations.objects.all()
     serializer_class = ConfigurationsSerializer
-    #permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
 class ActiveGameGoalCheckViewSet(APIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kw):
 
@@ -281,6 +317,8 @@ class ActiveGameGoalCheckViewSet(APIView):
 
 class ActiveGameViewSet(APIView):
 
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, *args, **kw):
 
         # Get the username from GET
@@ -328,13 +366,16 @@ class ActiveGameViewSet(APIView):
 
 
 class UserList(ListAPIView):
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class UserDetail(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class UserRegisterViewSet(APIView):
@@ -363,6 +404,8 @@ class UserRegisterViewSet(APIView):
 
 
 class QuotesViewSet(APIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kw):
         quote = Quotes.objects.order_by("?").first()
