@@ -359,7 +359,10 @@ class ActiveGameViewSet(APIView):
             "duration" : gameObj[0].images.all()[image_index].duration_minutes,
             "start_time" :gameObj[0].start_time,
             "remote_ip" : gameObj[0].shassaros.all()[abs(user_index-1)].shassaro_ip,
-            "docker_manager_ip": DockerManager.objects.first().ip
+            "docker_manager_ip": DockerManager.objects.first().ip,
+            "remote_username" : gameObj[0].shassaros.all()[abs(user_index-1)].participants.all()[0].name,
+            "remote_email" : User.objects.filter(username=gameObj[0].shassaros
+                                                 .all()[abs(user_index-1)].participants.all()[0].name).first().email
         }
 
         return Response(returnJson, status=status.HTTP_200_OK)
