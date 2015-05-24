@@ -11,7 +11,7 @@ ShassaroApp.factory('LoginService', function ($http) {
                 }
             }).
                 success(function () {
-                    //$http.defaults.headers.common.Authorization = authString;
+                    $http.defaults.headers.common.Authorization = authString;
                     ShassaroApp.username = username;
                 });
         }
