@@ -1,6 +1,12 @@
 .ng-invalid { border-color: #cc0000;}
 .ng-valid { border-color: #b8e5cb; }
 
+.img-resize {
+    width: 180px;
+    height: 100%;
+    padding-bottom: 20px;
+}
+
 /*
  *  Document   : main.css
  *  Author     : pixelcave

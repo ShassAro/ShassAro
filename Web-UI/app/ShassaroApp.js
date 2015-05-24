@@ -19,6 +19,14 @@ ShassaroApp.config(['$routeProvider', '$locationProvider', function ($routeProvi
             templateUrl: 'views/Login.html'
 
         }).
+        when('/aboutUs',{
+            templateUrl: 'views/AboutUs.html'
+
+        }).
+        when('/aboutShassaro',{
+            templateUrl: 'views/aboutShassaro.html'
+
+        }).
         otherwise('/challenge');
 }]);
 
