@@ -12,12 +12,24 @@ def get_ip_address(ifname):
 
 # Initialize all test data
 def init_data():
-    tag1 = Tag(name="SQL", description="Tahat")
-    tag1.save()
 
-    tag2 = Tag(name="PHP", description="Much Tahat")
-    tag2.save()
+    ### Create Tags ###
+    tag_mysql = Tag(name="MySQL", description="Images that require knowledge in MySQL.")
+    tag_mysql.save()
+    tag_php = Tag(name="PHP", description="Images that require knowledge in PHP.")
+    tag_php.save()
+    tag_bash = Tag(name="Bash", description="Images that require knowledge in Bash.")
+    tag_bash.save()
+    tag_apache = Tag(name="Apache", description="Images that require knowledge in Apache.")
+    tag_apache.save()
+    tag_ftp = Tag(name="FTP", description="Images that require knowledge in FTP.")
+    tag_ftp.save()
+    tag_social = Tag(name="Social", description="Images that require some social engineering.")
+    tag_social.save()
+    tag_poc = Tag(name="POC", description="Images that require no knowledge.")
+    tag_poc.save()
 
+    ### Create Statuses ###
     status = GameRequestStatus(status="WAITING", message="Waiting for another player...")
     status.save()
     status = GameRequestStatus(status="DEPLOYING", message="Found a player, creating a game")
@@ -27,27 +39,44 @@ def init_data():
     status = GameRequestStatus(status="ERROR", message="Sorry... no challenges for you today :(")
     status.save()
 
-    img_challenge1 = Image(docker_name="shassaro/challenge1", description="POC image", level=1, allow_in_game=True, hints=["Try to tahat (not too much tahat)", "Keep that in mind. Tahat is the shit."], goal_description=['tahat','another-tahat'], duration_minutes=60)
+    ### Create Image object for Challenge1 ###
+    img_challenge1 = Image(docker_name="shassaro/challenge1", description="POC image", level=1, allow_in_game=True, goal_description=['tahat','another-tahat'], hints=["Try to tahat (not too much tahat)", "Keep that in mind. Tahat is the shit."], duration_minutes=60)
+    img_challenge1.save()
+    img_challenge1.tags.add(tag_poc)
     img_challenge1.save()
 
+    ### Create Image object for Challenge2 ###
     img_challenge2 = Image(docker_name="shassaro/challenge2", description="Reverse shell", level=1, allow_in_game=True, hints=["The bash version have not been updated in a while..", "Look at the website source.."], goal_description=['Find reverse shell!','Get the secret from the DB'], duration_minutes=60)
     img_challenge2.save()
+    img_challenge2.tags.add(tag_bash)
+    img_challenge2.tags.add(tag_apache)
+    img_challenge2.tags.add(tag_mysql)
+    img_challenge2.save()
 
+    ### Create Image object for Challenge3 ###
     img_challenge3 = Image(docker_name="shassaro/challenge3", description="FTP and Apache", level=1, allow_in_game=True, hints=["Can you login to the FTP server", "HTML is the source of all evil"], goal_description=['Get into the FTP server', 'Find the secret'], duration_minutes=60)
     img_challenge3.save()
+    img_challenge3.tags.add(tag_ftp)
+    img_challenge3.tags.add(tag_social)
+    img_challenge3.save()
 
+    # Get eth0's IP address
     own_ip = get_ip_address('eth0')
 
+    ### Create object for Docker Server ###
     docker_server = DockerServer(name="primary", protocol="http", ip=own_ip, port="4243")
     docker_server.save()
 
+    ### Create object for Docker Manager ###
     docker_mgr = DockerManager(name="docker-manager", ip=own_ip, port="8000")
     docker_mgr.save()
 
+    ### Create user objects ###
     for i in ["shay", "assaf", "roi", "sheker", "beker", "bla", "tahat", "tusik"]:
         temp = User(username=i, email="{0}@shassaro.com".format(i))
         temp.save()
 
+    ### Create quotes ###
     quote = Quotes(quote="When Life Gives You Questions, Google has Answers.")
     quote.save()
     quote = Quotes(quote="My pokemon brings all the nerds to the yard, and they're like you wanna trade cards? Darn right, I wanna trade cards, I'll trade this but not my charizard.")
