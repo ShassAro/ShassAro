@@ -1,5 +1,7 @@
 from models import *
-import socket, fcntl, struct
+import socket
+import fcntl
+import struct
 
 # Magic. Don't touch.
 def get_ip_address(ifname):

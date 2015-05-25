@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.generics import ListAPIView
@@ -101,7 +101,7 @@ class GameRequestViewSet(ModelViewSet):
             tag_objects = [Tag.objects.get(name=tag.split('/')[-2]) for tag in tags]
             game_request = GameRequest(
                 username=username,
-                submitted_at=datetime.now())
+                submitted_at=datetime.now().replace(tzinfo=None))
 
             game_request.status = self.get_a_game_request_status(GameRequestStatuses.WAITING)
             for tag in tag_objects:
@@ -207,9 +207,16 @@ class CreateGame():
             deploy_shassaros(game.shassaros.all())
 
             # Fill out game
-            game.start_time = datetime.now()
+            game.start_time = datetime.now().replace(tzinfo=None)
             game.userA = participants[0]
             game.userB = participants[1]
+
+            # Fill duration_minutes
+            game_duration_minutes = 0
+            for image in images:
+                if image.duration_minutes > game_duration_minutes:
+                    game_duration_minutes = image.duration_minutes
+            game.duration_minutes = game_duration_minutes
 
             # save to db and return
             game.save()
@@ -334,6 +341,24 @@ class ActiveGameGoalCheckViewSet(APIView):
         }
 
         return Response(returnJson, status=status.HTTP_200_OK)
+
+class ScavageViewSet(APIView):
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    @staticmethod
+    def post(self, *args, **kw):
+
+        # Get all games
+        games = Game.objects.all()
+
+        for game in games:
+            max_time = (game.start_time + timedelta(0, (game.duration_minutes+30) * 60)).replace(tzinfo=None)
+            now_time = datetime.now().replace(tzinfo=None)
+            if (max_time < now_time):
+                return Response('{"status": "Games running in over-time found."}', status=status.HTTP_302_FOUND)
+
+        return Response('{"status": "Nothing to scavage."}', status=status.HTTP_200_OK)
 
 class ActiveGameViewSet(APIView):
 
