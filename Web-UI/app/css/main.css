@@ -1399,7 +1399,7 @@ a.widget.widget-hover-effect4:active {
     padding: 20px 10px;
     background: #444444;
     background: url('../img/template/ie8_opacity_dark_60.png') repeat;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.8);
 }
 
 #login-container .login-title h1,
@@ -3552,7 +3552,7 @@ p, .table, .alert, .carousel {
     #login-container,
     #login-alt-container {
         width: 480px;
-        top: 186px;
+        /*top: 186px;*/
         margin-left: -240px;
     }
 
