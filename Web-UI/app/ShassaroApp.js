@@ -27,6 +27,12 @@ ShassaroApp.config(['$routeProvider', '$locationProvider', function ($routeProvi
             templateUrl: 'views/aboutShassaro.html'
 
         }).
+        when('/dashboard', {
+            templateUrl: 'views/DashboardView.html'
+        }).
+        when('/', {
+            templateUrl: 'views/main.html'
+        }).
         otherwise('/challenge');
 }]);
 
