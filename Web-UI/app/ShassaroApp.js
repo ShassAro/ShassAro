@@ -28,7 +28,7 @@ ShassaroApp.config(['$routeProvider', '$locationProvider', function ($routeProvi
 
         }).
         when('/dashboard', {
-            templateUrl: 'views/Dashboard.html'
+            templateUrl: 'views/DashboardView.html'
         }).
         when('/', {
             templateUrl: 'views/main.html'
