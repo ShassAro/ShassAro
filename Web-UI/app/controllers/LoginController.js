@@ -20,6 +20,8 @@ ShassaroApp.controller('LoginModalController', function ($scope, $modalInstance,
     $scope.password = '';
 
     $scope.tryLogin = function () {
+        $modalInstance.close(true);
+
         LoginService.login($scope.username, $scope.password).
             success(function () {
                 $modalInstance.close(true);
