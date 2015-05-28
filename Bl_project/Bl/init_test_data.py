@@ -75,7 +75,8 @@ def init_data():
 
     ### Create user objects ###
     for i in ["shay", "assaf", "roi", "sheker", "beker", "bla", "tahat", "tusik"]:
-        temp = User(username=i, email="{0}@shassaro.com".format(i))
+        temp = User(username=i, email="{0}@shassaro.com".format(i), first_name=i, last_name="lastname")
+        temp.set_password("123456")
         temp.save()
 
     ### Create quotes ###

@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.shortcuts import redirect
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
@@ -421,9 +421,10 @@ class UserList(ListAPIView):
 
 
 class UserDetail(RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSerializer
+    lookup_field = "username"
+    queryset = User.objects.all()
 
 
 class UserRegisterViewSet(APIView):
@@ -434,15 +435,19 @@ class UserRegisterViewSet(APIView):
             username = request.DATA['username']
             password = request.DATA['password']
             email = request.DATA['email']
+            first_name = request.DATA['first_name']
+            last_name = request.DATA['last_name']
 
         except Exception as e:
-            return Response("Accepted json fields: username, password, email", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Accepted json fields: username, password, email, first_name, last_name", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user = User()
             user.username = username
             user.set_password(password)
             user.email = email
+            user.first_name = first_name
+            user.last_name = last_name
             user.save()
 
             return Response("User created! Gotta Beat Them'all!", status=status.HTTP_201_CREATED)
@@ -458,3 +463,51 @@ class QuotesViewSet(APIView):
     def get(self, request, *args, **kw):
         quote = Quotes.objects.order_by("?").first()
         return Response(quote.quote, status=status.HTTP_200_OK)
+
+
+class AuthView(APIView):
+    #authentication_classes = (BasicAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+
+        if (len(Token.objects.filter(user=request.user)) == 0):
+            token = Token.objects.create(user=request.user)
+        else:
+            token = Token.objects.filter(user=request.user).first()
+
+        return Response(token.key, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+
+        Token.objects.filter(user=request.user).delete()
+        return Response("You are done motherfucker", status=status.HTTP_200_OK)
+
+
+class UserStatsView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        username = kwargs["username"]
+
+        gameresults = GameResult.objects.filter(Q(winning_users=User.objects.filter(username=username)) |
+                                                Q(losing_users=User.objects.filter(username=username)))
+
+        wingameresult = GameResult.objects.filter(winning_users=User.objects.filter(username=username))
+
+        yesterday = date.today() - timedelta(days=1)
+
+        total_games = len(gameresults)
+        total_wins = len(wingameresult)
+        games_today = len(gameresults.filter(start_time__gt=yesterday))
+        wins_today = len(wingameresult.filter(start_time__gt=yesterday))
+
+        resultJson = {
+            "total_games" : total_games,
+            "total_wins" : total_wins,
+            "games_today" : games_today,
+            "win_today" : wins_today
+        }
+
+        return Response(resultJson, status=status.HTTP_200_OK)
+

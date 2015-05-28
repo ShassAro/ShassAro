@@ -31,7 +31,9 @@ urlpatterns = patterns('',
     url(r'^active_game/(?P<username>\w+)/goal', views.ActiveGameGoalCheckViewSet.as_view(), name="active_game_goal_check"),
     url(r'^scavage/$', views.ScavageViewSet.as_view(), name="scavage"),
     url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
-    url(r'^users/register/$', views.UserRegisterViewSet.as_view()),
-    url(r'^fsng/$', views.QuotesViewSet.as_view())
+    url(r'^users/(?P<username>\w+)/$', views.UserDetail.as_view()),
+    url(r'^users/(?P<username>\w+)/stats$', views.UserStatsView.as_view()),
+    url(r'^register/$', views.UserRegisterViewSet.as_view()),
+    url(r'^fsng/$', views.QuotesViewSet.as_view()),
+    url(r'auth/$', views.AuthView.as_view())
 )
