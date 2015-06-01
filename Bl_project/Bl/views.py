@@ -417,7 +417,6 @@ class UserList(ListAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
 
 
 class UserDetail(RetrieveAPIView):
