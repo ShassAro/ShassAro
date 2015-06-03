@@ -6,7 +6,7 @@ from bl_exceptions import DockerManagerNotAvailableError, KillError
 from models import DockerManager, GameResult, GameRequest
 
 
-def end_game(game_obj, username_winner, username_loser):
+def end_game(game_obj, username_winner, username_loser, game_timed_out = False):
 
     # Create the kill command json
     kill_json =  {
@@ -34,11 +34,16 @@ def end_game(game_obj, username_winner, username_loser):
     # Send the kill!
     response = requests.post(docker_manager_url, json=kill_json)
 
-    if response.status_code != status.HTTP_200_OK:
+    if response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR:  # Probably because docker was already deleted
+        pass
+    elif response.status_code != status.HTTP_200_OK:
         raise KillError("status_code:{0} response:{1}".format(response.status_code, response.text))
 
     # Lets create a game result!
     game_result = GameResult()
+
+    # Game timed out ?
+    game_result.game_timed_out = game_timed_out
 
     # Is computer?
     game_result.computer = game_obj.computer
@@ -51,14 +56,21 @@ def end_game(game_obj, username_winner, username_loser):
     game_result.start_time = game_obj.start_time
 
     # Set the experience gained from this challenge
-    game_result.experience_gained = calculate_exprience_gained()
+    if game_timed_out:
+        game_result.experience_gained = 0
+    else:
+        game_result.experience_gained = calculate_exprience_gained()
 
     # Saving before establishing any many-to-many relationships
     game_result.save()
 
     # Set the winning and losing users
-    game_result.losing_users.add(User.objects.filter(username=username_loser)[0])
-    game_result.winning_users.add(User.objects.filter(username=username_winner)[0])
+    if game_timed_out:
+        game_result.losing_users.add(User.objects.filter(username=username_loser[0])[0])
+        game_result.losing_users.add(User.objects.filter(username=username_loser[1])[0])
+    else:
+        game_result.losing_users.add(User.objects.filter(username=username_loser)[0])
+        game_result.winning_users.add(User.objects.filter(username=username_winner)[0])
 
     # Add the tags, from each image
     for image in game_obj.images.all():
