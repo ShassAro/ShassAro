@@ -491,6 +491,16 @@ class AuthView(APIView):
         return Response("You are done motherfucker", status=status.HTTP_200_OK)
 
 
+class LogoutView(APIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def delete(self, request, *args, **kwargs):
+
+        Token.objects.filter(user=request.user).delete()
+        return Response("You are done motherfucker", status=status.HTTP_200_OK)
+
+
 class UserStatsView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 

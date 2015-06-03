@@ -35,5 +35,6 @@ urlpatterns = patterns('',
     url(r'^users/(?P<username>\w+)/stats$', views.UserStatsView.as_view()),
     url(r'^register/$', views.UserRegisterViewSet.as_view()),
     url(r'^fsng/$', views.QuotesViewSet.as_view()),
-    url(r'auth/$', views.AuthView.as_view())
+    url(r'login/$', views.AuthView.as_view()),
+    url(r'logout/$', views.LogoutView.as_view())
 )
