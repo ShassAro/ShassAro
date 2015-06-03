@@ -78,6 +78,7 @@ class GameResult(models.Model):
     actual_duration_minutes = models.PositiveIntegerField()
     tags = models.ManyToManyField(Tag)
     experience_gained = models.PositiveIntegerField()
+    game_timed_out = models.BooleanField(default=False)
 
 
 class Badge(models.Model):
