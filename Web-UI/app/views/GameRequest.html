@@ -19,6 +19,12 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            <h4><i>"{{quote}}"</i></h4>
+        </div>
+    </div>
     <div ng-repeat="stepName in statusNames" class="row" ng-if="$index < currentStep">
         <div class="col-md-10 col-md-push-1 text-primary">
             <h3 ng-class="{'text-warning':stepsInfo[$index].status == statusNames[0],'text-info':stepsInfo[$index].status == statusNames[1],'text-success':stepsInfo[$index].status == statusNames[2]}">

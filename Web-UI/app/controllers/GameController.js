@@ -1,10 +1,16 @@
 'use strict';
 
-ShassaroApp.controller('GameController', function ($scope, ActiveGames) {
+ShassaroApp.controller('GameController', function ($scope, $websocket, ActiveGames) {
+    var socket = $websocket(ShassaroApp.api_host_url.replace('http://','ws://')+'/ws/'+$scope.username+'-game?subscribe-broadcast');
+    socket.onMessage(function (event) {
+        var gameInfo = JSON.parse(event.data);
+        console.log(gameInfo);
+    });
+
     App.sidebar('close-sidebar');
 
     $scope.isConnected = false;
-    $scope.username = ShassaroApp.username;
+    $scope.username = ShassaroApp.user.name;
     $scope.gameCompleted = false;
 
     ActiveGames.get({username: $scope.username}).$promise

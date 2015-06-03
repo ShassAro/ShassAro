@@ -4,8 +4,8 @@ ShassaroApp.factory('GameRequestStatuses', function ($resource) {
     return $resource(ShassaroApp.api_host_url + '/game_request_statuses/:status', {}, {});
 });
 
-ShassaroApp.controller('GameRequestController', function ($scope, $websocket, $location, $timeout, GameRequestStatuses) {
-    $scope.username = ShassaroApp.username;
+ShassaroApp.controller('GameRequestController', function ($scope, $websocket, $location, $interval, $timeout, user, GameRequestStatuses, Quotes) {
+    $scope.username = ShassaroApp.user.username;
     $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE'];
 
     var socket = $websocket(ShassaroApp.api_host_url.replace('http://','ws://')+'/ws/'+$scope.username+'?subscribe-broadcast');
@@ -61,7 +61,16 @@ ShassaroApp.controller('GameRequestController', function ($scope, $websocket, $l
         });
     };
 
-    return;
-    $scope.refreshGameRequestStatus();
-    setInterval($scope.refreshGameRequestStatus ,2500);
+    $scope.getQuote = function () {
+        Quotes.get().success(function (quote) {
+            $scope.quote = quote;
+        });
+    };
+
+    $scope.getQuote();
+    $scope.quotesInterval = $interval($scope.getQuote, 10*1000);
+    $scope.$on('$destroy', function() {
+        $interval.cancel($scope.quotesInterval);
+        delete $scope.quotesInterval;
+    });
 });
