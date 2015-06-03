@@ -10,14 +10,16 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 import os
 import sys
 
-from django.contrib.auth.handlers.modwsgi import check_password
-
 root = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0,root)
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Bl.settings")
 os.environ["DJANGO_SETTINGS_MODULE"] = "Bl.settings"
 #from django.core.wsgi import get_wsgi_application
 #application = get_wsgi_application()
+
+
+from django.contrib.auth.handlers.modwsgi import check_password
+
 
 from django.core.handlers.wsgi import WSGIHandler
 application = WSGIHandler()
