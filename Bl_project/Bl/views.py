@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, date
 from django.shortcuts import redirect
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
@@ -464,8 +465,15 @@ class QuotesViewSet(APIView):
         return Response(quote.quote, status=status.HTTP_200_OK)
 
 
+class QuietBasicAuthentication(BasicAuthentication):
+    # disclaimer: once the user is logged in, this should NOT be used as a
+    # substitute for SessionAuthentication, which uses the django session cookie,
+    # rather it can check credentials before a session cookie has been granted.
+    def authenticate_header(self, request):
+        return 'xBasic realm="%s"' % self.www_authenticate_realm
+
 class AuthView(APIView):
-    #authentication_classes = (BasicAuthentication,)
+    authentication_classes = (QuietBasicAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
