@@ -11,6 +11,7 @@ from Exceptions import *
 from ShassaroContainer import ShassaroContainerSerializer
 from docker import Client
 import logging
+import logging
 
 logger = logging.getLogger(__name__)
 
