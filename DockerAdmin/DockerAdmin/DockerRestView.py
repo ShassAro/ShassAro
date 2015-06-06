@@ -10,6 +10,7 @@ from ShassAro import ShassAro, ShassaroSerializer
 from Exceptions import *
 from ShassaroContainer import ShassaroContainerSerializer
 import logging
+from docker import Client
 
 logger = logging.getLogger(__name__)
 
