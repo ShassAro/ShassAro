@@ -33,5 +33,6 @@ urlpatterns = patterns('',
     url(r'^register/$', views.UserRegisterViewSet.as_view()),
     url(r'^fsng/$', views.QuotesViewSet.as_view()),
     url(r'login/$', views.AuthView.as_view()),
-    url(r'logout/$', views.LogoutView.as_view())
+    url(r'logout/$', views.LogoutView.as_view()),
+    url(r'validate_token/$', views.ValidateToken.as_view()),
 )
