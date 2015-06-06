@@ -10,6 +10,7 @@ from ShassAro import ShassAro, ShassaroSerializer
 from Exceptions import *
 from ShassaroContainer import ShassaroContainerSerializer
 import logging
+from docker import Client
 
 logger = logging.getLogger(__name__)
 
@@ -115,8 +116,32 @@ class DockerKillRestView(APIView):
 
             response = Response(e.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
         return response
 
 
+class DockerListRestView(APIView):
 
+    def get(self, request, *args, **kw):
+
+        try:
+            # Get the two shassaros
+            dockerServers = request.DATA['dockerServers']
+
+        except Exception as e:
+            return Response(e.__dict__, status=status.HTTP_400_BAD_REQUEST)
+
+        docker_ids = {}
+
+        try:
+
+            for dockerServer in dockerServers:
+                docker_client = Client(base_url=dockerServer)
+                containers = docker_client.containers()
+                if len(containers) > 0:
+                    docker_ids[dockerServer] = []
+                    for container in containers:
+                        docker_ids[dockerServer].append(container['Id'])
+        except Exception as e:
+            return Response(data=str(e.message), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data=docker_ids, status=status.HTTP_200_OK)

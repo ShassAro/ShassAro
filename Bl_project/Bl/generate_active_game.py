@@ -18,7 +18,7 @@ def GenerateActiveGame(username):
     if (len(gameObj) == 0):
 
         # Find all game result that the user is a member of
-        allGames = GameResult.objects.filter(Q(losing_users__username=username  ) | Q(winning_users__username=username))
+        allGames = GameResult.objects.filter(Q(losing_users__username=username) | Q(winning_users__username=username))
 
         # Redirect to gameresult to the last game of all
         return "/game_results/{0}".format(allGames.order_by("-start_time")[0].pk)
