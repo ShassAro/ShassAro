@@ -1229,7 +1229,8 @@ a.sidebar-title:focus {
     position: absolute;
     top: 0;
     left: 0;
-    height: 150px;
+    /*height: 150px;*/
+    width: 100%;
 }
 
 .widget-advanced .widget-background-map {

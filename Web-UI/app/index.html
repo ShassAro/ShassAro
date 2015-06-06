@@ -38,6 +38,7 @@
         <!-- Stylesheets -->
         <!-- Bootstrap is included in its original form, unaltered -->
         <!--<link rel="stylesheet" href="bower_components/angular-bootstrap/"/>-->
+        <!--<link rel="stylesheet" href="bower_components/angular-timer/dist/assets/css/angular-timer-bower.css"/>-->
         <link rel="stylesheet" href="css/bootstrap.css">
 
         <!-- Related styles of various icon packs and plugins -->
@@ -52,17 +53,19 @@
         <link rel="stylesheet" href="css/themes.css">
         <!-- END Stylesheets -->
 
+
         <!-- Modernizr (browser feature detection library) & Respond.js (Enable responsive CSS code on browsers that don't support it, eg IE8) -->
         <script src="js/vendor/modernizr-2.7.1-respond-1.4.2.min.js"></script>
     </head>
-    <body ng-app="ShassaroApp">
+    <body ng-app="ShassaroApp" class="page-loading">
         <!-- Preloader -->
         <!-- Preloader functionality (initialized in js/app.js) - pageLoading() -->
         <!-- Used only if page preloader is enabled from inc/config (PHP version) or the class 'page-loading' is added in body element (HTML version) -->
-        <div class="preloader themed-background">
-            <h1 class="push-top-bottom text-light text-center"><strong>S</strong>ass<strong>A</strong>ro</h1>
+        <div class="preloader" style="background-color: currentColor;">
+            <h1 class="push-top-bottom text-light text-center">
+                <img src="img/logos/logo_shassaro_no_slogan_transparent.png" width="400" alt=""/>
+            </h1>
             <div class="inner">
-                <h3 class="text-light visible-lt-ie9 visible-lt-ie10"><strong>Loading..</strong></h3>
                 <div class="preloader-spinner hidden-lt-ie9 hidden-lt-ie10"></div>
             </div>
         </div>
@@ -272,14 +275,18 @@
         <script>!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-1.11.1.min.js"%3E%3C/script%3E'));</script>
 
         <!--Angular-->
+
         <script src="bower_components/angular/angular.js"></script>
         <script src="bower_components/angular-route/angular-route.js"></script>
         <script src="bower_components/angular-resource/angular-resource.js"></script>
         <script src="bower_components/angular-no-vnc/dist/angular-noVNC.js"></script>
-        <script src="bower_components/angular-timer/dist/angular-timer.js"></script>
         <script src="bower_components/angular-websocket/angular-websocket.js"></script>
         <script src="bower_components/angular-gravatar/build/angular-gravatar.js"></script>
         <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+
+        <script src="bower_components/momentjs/min/moment-with-locales.js"></script>
+        <script src="bower_components/humanize-duration/humanize-duration.js"></script>
+        <script src="bower_components/angular-timer/dist/angular-timer.js"></script>
 
 
         <!-- Bootstrap.js, Jquery plugins and Custom JS code -->
@@ -304,5 +311,22 @@
         <script src="controllers/GameController.js"></script>
         <script src="controllers/AuthenticationController.js"></script>
 
+        <script type="application/javascript">
+
+            Date.prototype.addMinutes = function (minutes) {
+                var copiedDate = new Date(this.getTime());
+                return new Date(copiedDate.getTime() + minutes * 60000);
+            };
+
+            ShassaroApp.controller('TimerController', function ($scope) {
+                $scope.startTime = new Date().addMinutes(-14);
+                $scope.durationInMinuts = 20;
+                $scope.endTime = $scope.startTime.addMinutes($scope.durationInMinuts);
+
+                $scope.startTime = $scope.startTime.getTime();
+                $scope.endTime = $scope.endTime.getTime();
+            });
+
+        </script>
     </body>
 </html>
