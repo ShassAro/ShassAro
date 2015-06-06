@@ -18,15 +18,15 @@ def main():
             request = urllib2.Request('http://localhost:1234/scavage/', '')
             response = urllib2.urlopen(request)
         except urllib2.HTTPError as e:
-            print 'Server could not complete request. Err: ' + str(e.code)
+            print str(datetime.now()) + ' - Server could not complete request. Err: ' + str(e.code)
         except urllib2.URLError as e:
-            print 'Failed to reach the server. Err: ' + str(e.reason)
+            print str(datetime.now()) + ' - Failed to reach the server. Err: ' + str(e.reason)
         else:
             result = response.read()
 
             str_to_write = str(datetime.now())
             json_result = json.loads(result)
-            str_to_write += ' - response = ' + str(json_result)
+            str_to_write += ' - Response = ' + str(json_result)
 
             print str_to_write
     except Exception as e:
