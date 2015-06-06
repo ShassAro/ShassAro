@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions
+from generate_active_game import GenerateActiveGame
 from end_game import end_game
 from serializers import *
 from models import *
@@ -159,6 +160,13 @@ class GameRequestViewSet(ModelViewSet):
             # And notify that its done
             user_publisher.publish_message(RedisMessage(serializers.serialize("json",[game_request])))
             remote_user_publisher.publish_message(RedisMessage(serializers.serialize("json",[match])))
+
+            # Now, we need to create another websocket to let the web know about the active game
+            user_publisher = RedisPublisher(facility="{0}-game".format(username), broadcast=True)
+            remote_user_publisher = RedisPublisher(facility="{0}-game".format(match.username), broadcast=True)
+
+            user_publisher.publish_message(RedisMessage(json.dumps(GenerateActiveGame(username))))
+            remote_user_publisher.publish_message(RedisMessage(json.dumps(GenerateActiveGame(match.username))))
 
             return Response(data=serializers.serialize("json",[game_request]), status=status.HTTP_201_CREATED)
 
@@ -336,6 +344,15 @@ class ActiveGameGoalCheckViewSet(APIView):
                     end_game(gameObj[0], username, other_username)
                     finished = True
 
+        if(found):
+
+            # Notify change via websockets
+            userA_publisher = RedisPublisher(facility="{0}-game".format(gameObj[0].userA), broadcast=True)
+            userB_publisher = RedisPublisher(facility="{0}-game".format(gameObj[0].userB), broadcast=True)
+
+            userA_publisher.publish_message(RedisMessage(GenerateActiveGame(gameObj[0].userA)))
+            userB_publisher.publish_message(RedisMessage(GenerateActiveGame(gameObj[0].userB)))
+
         returnJson = {
             "status" : found,
             "all_completed" : finished
@@ -369,47 +386,8 @@ class ActiveGameViewSet(APIView):
 
         # Get the username from GET
         username = kw["username"]
-        user_index = 0
 
-        # Get the game object. Try userA first.
-        gameObj = Game.objects.filter(userA=username)
-
-        if (len(gameObj) == 0):
-
-            # Lets try userB
-            gameObj = Game.objects.filter(userB=username)
-            user_index = 1
-
-        # If none found -> game is over. return gameresult.
-        if (len(gameObj) == 0):
-
-            # Find all game result that the user is a member of
-            allGames = GameResult.objects.filter(Q(losing_users__username=username  ) | Q(winning_users__username=username))
-
-            # Redirect to gameresult to the last game of all
-            return redirect("/game_results/{0}".format(allGames.order_by("-start_time")[0].pk), permanent=False)
-
-        # Assume two user have different images
-        image_index = user_index
-
-        # Find out if the users uses the same image
-        if (len(gameObj[0].images.all()) == 1):
-            image_index = 0 # Force the usage of the first image
-
-        returnJson = {
-            "username" : gameObj[0].shassaros.all()[user_index].participants.all()[0].name,
-            "vnc_port" : gameObj[0].shassaros.all()[user_index].participants.all()[0].vnc_port,
-            "password" : gameObj[0].shassaros.all()[user_index].participants.all()[0].password,
-            "goals" : gameObj[0].images.all()[image_index].goal_description,
-            "hints" : gameObj[0].images.all()[image_index].hints,
-            "duration" : gameObj[0].images.all()[image_index].duration_minutes,
-            "start_time" :gameObj[0].start_time,
-            "remote_ip" : gameObj[0].shassaros.all()[abs(user_index-1)].shassaro_ip,
-            "docker_manager_ip": DockerManager.objects.first().ip,
-            "remote_username" : gameObj[0].shassaros.all()[abs(user_index-1)].participants.all()[0].name,
-            "remote_email" : User.objects.filter(username=gameObj[0].shassaros
-                                                 .all()[abs(user_index-1)].participants.all()[0].name).first().email
-        }
+        returnJson = GenerateActiveGame(username)
 
         return Response(returnJson, status=status.HTTP_200_OK)
 
