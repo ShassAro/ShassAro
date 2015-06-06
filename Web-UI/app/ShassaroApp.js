@@ -49,9 +49,13 @@ var ShassaroApp = angular
             when('/dashboard', {
                 templateUrl: 'views/DashboardView.html'
             }).
+            when('/gameResult', {
+                templateUrl: 'views/GameResult.html'
+            }).
             when('/', {
                 templateUrl: 'views/main.html'
             }).
+
             otherwise('/challenge');
     }]);
 

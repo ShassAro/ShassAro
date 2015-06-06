@@ -20,12 +20,21 @@
     font-size: 20px;
 }
 
+.result-fontsize {
+    font-size: 20px;
+}
+
 #sidebar {
     z-index: 3;
     height: 100%;
 }
 #main-container {
     z-index: 2;
+}
+
+.result-img {
+    width: 100px;
+    height: 100%;
 }
 
 /*
