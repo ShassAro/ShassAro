@@ -9,7 +9,7 @@ from models import Shassaro, GameUser, DockerManager, DockerServer
 
 def generate_goal():
     """
-    Generates a random hash (128 bits)
+    Generates a random hash (32 bits)
     :return: Hex value of the hash
     """
     hash_string = random.getrandbits(32)

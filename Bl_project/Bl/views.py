@@ -46,7 +46,7 @@ class GameUserViewSet(ModelViewSet):
 class ShassaroViewSet(ModelViewSet):
     queryset = Shassaro.objects.all()
     serializer_class = ShassaroSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class GameRequestStatuses:
@@ -93,7 +93,12 @@ class GameRequestViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
 
         try:
+            # Get username and verify it exists
             username = request.DATA["username"]
+            user_object = User.objects.filter(username=username)
+            if len(user_object) == 0:
+                return Response(data="Username does not exist.", status=status.HTTP_400_BAD_REQUEST)
+
             tags = request.DATA.getlist("tags")
 
         except Exception as e:
@@ -112,12 +117,11 @@ class GameRequestViewSet(ModelViewSet):
 
             game_request.save()
 
-
             # Notify via websocket
             user_publisher = RedisPublisher(facility=username, broadcast=True)
             user_publisher.publish_message(RedisMessage(serializers.serialize("json",[game_request])))
 
-            # Do we have another user? (thats not us..)
+            # Do we have another user? (that's not us..)
 
             match = GameRequest.objects.\
                 filter(status=GameRequestStatus.objects.get(status=GameRequestStatuses.WAITING)).\
@@ -233,6 +237,11 @@ class CreateGame():
             return game
 
         except Exception as e:
+            if game is not None:
+                if game.shassaros is not None:
+                    for shassaro in game.shassaros:
+                        shassaro.delete()
+                game.delete()
             raise CreateGameError(e)
 
 
