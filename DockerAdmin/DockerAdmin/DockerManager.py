@@ -14,6 +14,9 @@ from random import randint
 import socket
 from urlparse import urlparse
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 class DockerDeploy():
 
@@ -31,8 +34,12 @@ class DockerDeploy():
         Give all remote facters as "export FACTER_remoteGoal1=goal"
         """
 
+        logger.debug("Starting deploy!")
+
         # Figure out the docker server
         self.docker_server = self.getDockerServer()
+
+        logger.debug("Docker API server: {0}".format(self.docker_server))
 
         # Set it to shassaro
         self.shassarosContainer.shassaros[0].docker_server_ip = self.docker_server
@@ -52,6 +59,8 @@ class DockerDeploy():
         try:
             # Initialize counter
             counter=1
+
+            logger.debug("Generating goals and users")
 
             # Serialize goals - Sorry for future us
             self.shassarosContainer.shassaros[0].goals = json.loads("{\"goals\":" + self.shassarosContainer.shassaros[0].goals + "}")["goals"]
@@ -83,17 +92,22 @@ class DockerDeploy():
                                 self.shassarosContainer.shassaros[1].participants['password']
                                 + "\"}}")
 
+            logger.debug("All generated!")
+
         except Exception as e:
             raise ShassAroException("Could not parse goals parameters. Exception: " + str(e))
 
         try:
+            logger.debug("Open connection to docker api.")
             # Open a connection
             client = Client(base_url=self.docker_server, version="1.17")
+            logger.debug("Opened!")
 
         except Exception as e:
             raise ShassAroException("Could not connect to docker API. Exception: " + str(e))
 
         try:
+            logger.debug("Create container 1")
             # Create container 1
             container = client.create_container(image=self.shassarosContainer.shassaros[0].docker_name,
                                                 hostname="shassaro_"+
@@ -108,10 +122,14 @@ class DockerDeploy():
             # Set the container ID
             self.shassarosContainer.shassaros[0].docker_id = container['Id']
 
+            logger.debug("Container 1 created.")
+
         except Exception as e:
             raise ShassAroException("Could not Create shassaro image1 . Exception: " + str(e))
 
         try:
+            logger.debug("Create container 2")
+
             # Create container 2
             container = client.create_container(image=self.shassarosContainer.shassaros[1].docker_name,
                                                 hostname="shassaro_"+
@@ -126,6 +144,8 @@ class DockerDeploy():
             # Set the container ID
             self.shassarosContainer.shassaros[1].docker_id = container['Id']
 
+            logger.debug("Container 2 created.")
+
         except Exception as e:
 
             # Kill the shassaro instance 1
@@ -134,6 +154,7 @@ class DockerDeploy():
             raise ShassAroException("Could not Create shassaro image2 . Exception: " + str(e))
 
         try:
+            logger.debug("Start container 1")
             # Start container 1
             client.start(container=self.shassarosContainer.shassaros[0].docker_id,
                          publish_all_ports=True)
@@ -142,6 +163,8 @@ class DockerDeploy():
             inspect = client.inspect_container(container=self.shassarosContainer.shassaros[0].docker_id)
             self.shassarosContainer.shassaros[0].shassaro_ip = inspect.get("NetworkSettings").get("IPAddress")
             shassaroPort1 = inspect['NetworkSettings']['Ports']['5901/tcp'][0]['HostPort']
+
+            logger.debug("Container 1 started.")
 
         except Exception as e:
 
@@ -152,6 +175,7 @@ class DockerDeploy():
             raise ShassAroException("Could not start image1 . Exception: " + str(e))
 
         try:
+            logger.debug("Start container 2")
             # Start container 2
             client.start(container=self.shassarosContainer.shassaros[1].docker_id,
                          publish_all_ports=True)
@@ -160,6 +184,8 @@ class DockerDeploy():
             inspect = client.inspect_container(container=self.shassarosContainer.shassaros[1].docker_id)
             self.shassarosContainer.shassaros[1].shassaro_ip = inspect.get("NetworkSettings").get("IPAddress")
             shassaroPort2 = inspect['NetworkSettings']['Ports']['5901/tcp'][0]['HostPort']
+
+            logger.debug("Container 2 started.")
 
         except Exception as e:
 
@@ -173,6 +199,8 @@ class DockerDeploy():
         t1 = Thread(target=self.executeDocker1)
         t2 = Thread(target=self.executeDocker2)
 
+        logger.debug("Starting puppet configuration threads.")
+
         # Start the threads
         t1.start()
         t2.start()
@@ -181,9 +209,13 @@ class DockerDeploy():
         t1.join()
         t2.join()
 
+        logger.debug("Both threads finished!")
+
         try:
             # Get local port
             localPort = self.getPortOnLocalServer()
+
+            logger.debug("Start websockify on container 1")
 
             # Create the command
             arguments = ["nohup", "/opt/noVNC/utils/launch.sh", "--vnc",
@@ -197,6 +229,8 @@ class DockerDeploy():
             # Add it to shassaro
             self.shassarosContainer.shassaros[0].participants["vnc_port"] = localPort
 
+            logger.debug("Websockify started on container 1 on port {0}".format(localPort))
+
         except Exception as e:
 
             # Kill shassaro instances
@@ -209,6 +243,7 @@ class DockerDeploy():
             # Get local port
             localPort = self.getPortOnLocalServer()
 
+            logger.debug("Start websockify on container 2")
 
             # Create the command
             arguments = ["nohup", "/opt/noVNC/utils/launch.sh", "--vnc",
@@ -221,6 +256,8 @@ class DockerDeploy():
             # Add it to shassaro
             self.shassarosContainer.shassaros[1].participants["vnc_port"] = localPort
 
+            logger.debug("Websockify started on container 2 on port {0}".format(localPort))
+
         except Exception as e:
 
             # Kill shassaro instances
@@ -228,6 +265,8 @@ class DockerDeploy():
             DockerKill(self.docker_server, self.shassarosContainer.shassaros[1].docker_id).kill()
 
             raise ShassAroException("Could not start websocket to image2. Exception: " + str(e))
+
+        logger.debug("All done! returning shassaros.")
 
         # Return final shassaros
         return self.shassarosContainer
