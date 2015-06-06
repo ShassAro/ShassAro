@@ -4,20 +4,20 @@ ShassaroApp.factory('Users', function ($resource, $q) {
     var resource = $resource(ShassaroApp.api_host_url + '/users/:username');
 
     return {
-        //get: resource.get
-        get: function () {
-            var deferred = $q.defer();
-            deferred.resolve({
-                username: "assaf",
-                email: "assafaloni@gmail.com",
-                first_name: "Assaf",
-                last_name: "Aloni"
-            });
-
-            deferred.$promise = deferred.promise;
-
-            return deferred;
-        }
+        get: resource.get
+        //get: function () {
+        //    var deferred = $q.defer();
+        //    deferred.resolve({
+        //        username: "assaf",
+        //        email: "assafaloni@gmail.com",
+        //        first_name: "Assaf",
+        //        last_name: "Aloni"
+        //    });
+        //
+        //    deferred.$promise = deferred.promise;
+        //
+        //    return deferred;
+        //}
     };
 });
 
