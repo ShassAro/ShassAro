@@ -9,23 +9,17 @@ from DockerManager import DockerDeploy, DockerKill, DockerScavage
 from ShassAro import ShassAro, ShassaroSerializer
 from Exceptions import *
 from ShassaroContainer import ShassaroContainerSerializer
-from docker import Client
-import logging
 import logging
 
 logger = logging.getLogger(__name__)
 
-
 class DockerDeployRestView(APIView):
 
     def post(self, request, *args, **kw):
-
         # The raw shassaros as accepted from REST
         rawShssaros = []
-
         # Placeholder for the instances
         shassaroInstances = []
-
         # Placeholder for docker servers
         dockerServers = []
 
@@ -64,8 +58,8 @@ class DockerDeployRestView(APIView):
         response=""
 
         try:
-
             logger.debug("Starting deploy (restview)")
+
             # Get the result
             result = deployClass.deploy()
 
@@ -79,21 +73,19 @@ class DockerDeployRestView(APIView):
             response = Response(shaContainer.data, status=status.HTTP_200_OK)
 
         except ShassAroException as e:
-
             response = Response(e.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return response
 
+
 class DockerKillRestView(APIView):
 
     def post(self, request, *args, **kw):
-
         try:
             # Get the two shassaros
             dockerServerIp = request.DATA['dockerServerIp']
             dockerId1 = request.DATA['dockerId'][0]
             dockerId2 = request.DATA['dockerId'][1]
-
 
         except Exception as e:
             return Response(e.__dict__, status=status.HTTP_400_BAD_REQUEST)
@@ -109,12 +101,9 @@ class DockerKillRestView(APIView):
             # Get the result
             killClass1.kill()
             killClass2.kill()
-
             response = Response("", status=status.HTTP_200_OK)
 
         except ShassAroException as e:
-
             response = Response(e.__dict__, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
         return response
