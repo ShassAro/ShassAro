@@ -13,6 +13,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class DockerDeployRestView(APIView):
 
     def post(self, request, *args, **kw):
@@ -60,6 +61,8 @@ class DockerDeployRestView(APIView):
         try:
             logger.debug("Starting deploy (restview)")
 
+
+            logger.debug("Starting deploy (restview)")
             # Get the result
             result = deployClass.deploy()
 
