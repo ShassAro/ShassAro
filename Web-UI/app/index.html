@@ -12,20 +12,33 @@
         <!--<link rel="stylesheet" href="novnc/include/base.css"/>-->
 
         <!-- Icons -->
-        <!-- The following icons can be replaced with your own, they are used by desktop and mobile browsers -->
-        <link rel="shortcut icon" href="img/favicon.ico">
-        <link rel="apple-touch-icon" href="img/icon57.png" sizes="57x57">
-        <link rel="apple-touch-icon" href="img/icon72.png" sizes="72x72">
-        <link rel="apple-touch-icon" href="img/icon76.png" sizes="76x76">
-        <link rel="apple-touch-icon" href="img/icon114.png" sizes="114x114">
-        <link rel="apple-touch-icon" href="img/icon120.png" sizes="120x120">
-        <link rel="apple-touch-icon" href="img/icon144.png" sizes="144x144">
-        <link rel="apple-touch-icon" href="img/icon152.png" sizes="152x152">
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="img/favicon/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/favicon/apple-touch-icon-114x114.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/favicon/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/favicon/apple-touch-icon-144x144.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="60x60" href="img/favicon/apple-touch-icon-60x60.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/favicon/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="76x76" href="img/favicon/apple-touch-icon-76x76.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/favicon/apple-touch-icon-152x152.png" />
+        <link rel="icon" type="image/png" href="img/favicon/favicon-196x196.png" sizes="196x196" />
+        <link rel="icon" type="image/png" href="img/favicon/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/png" href="img/favicon/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" type="image/png" href="img/favicon/favicon-16x16.png" sizes="16x16" />
+        <link rel="icon" type="image/png" href="img/favicon/favicon-128.png" sizes="128x128" />
+        <meta name="application-name" content="&nbsp;"/>
+        <meta name="msapplication-TileColor" content="#FFFFFF" />
+        <meta name="msapplication-TileImage" content="img/favicon/mstile-144x144.png" />
+        <meta name="msapplication-square70x70logo" content="img/favicon/mstile-70x70.png" />
+        <meta name="msapplication-square150x150logo" content="img/favicon/mstile-150x150.png" />
+        <meta name="msapplication-wide310x150logo" content="img/favicon/mstile-310x150.png" />
+        <meta name="msapplication-square310x310logo" content="img/favicon/mstile-310x310.png" />
+
         <!-- END Icons -->
 
         <!-- Stylesheets -->
         <!-- Bootstrap is included in its original form, unaltered -->
         <!--<link rel="stylesheet" href="bower_components/angular-bootstrap/"/>-->
+        <!--<link rel="stylesheet" href="bower_components/angular-timer/dist/assets/css/angular-timer-bower.css"/>-->
         <link rel="stylesheet" href="css/bootstrap.css">
 
         <!-- Related styles of various icon packs and plugins -->
@@ -40,17 +53,19 @@
         <link rel="stylesheet" href="css/themes.css">
         <!-- END Stylesheets -->
 
+
         <!-- Modernizr (browser feature detection library) & Respond.js (Enable responsive CSS code on browsers that don't support it, eg IE8) -->
         <script src="js/vendor/modernizr-2.7.1-respond-1.4.2.min.js"></script>
     </head>
-    <body ng-app="ShassaroApp">
+    <body ng-app="ShassaroApp" class="page-loading">
         <!-- Preloader -->
         <!-- Preloader functionality (initialized in js/app.js) - pageLoading() -->
         <!-- Used only if page preloader is enabled from inc/config (PHP version) or the class 'page-loading' is added in body element (HTML version) -->
-        <div class="preloader themed-background">
-            <h1 class="push-top-bottom text-light text-center"><strong>S</strong>ass<strong>A</strong>ro</h1>
+        <div class="preloader" style="background-color: currentColor;">
+            <h1 class="push-top-bottom text-light text-center">
+                <img src="img/logos/logo_shassaro_no_slogan_transparent.png" width="400" alt=""/>
+            </h1>
             <div class="inner">
-                <h3 class="text-light visible-lt-ie9 visible-lt-ie10"><strong>Loading..</strong></h3>
                 <div class="preloader-spinner hidden-lt-ie9 hidden-lt-ie10"></div>
             </div>
         </div>
@@ -72,87 +87,47 @@
                         <!-- END Brand -->
 
                         <!-- User Info -->
-                        <div class="sidebar-section clearfix" ng-controller="LoginController">
+                        <div class="sidebar-section clearfix" ng-controller="AuthenticationController">
                             <div ng-switch="isAuthenticated">
                                 <div class="sidebar-user" ng-switch-when="true">
                                     <div class="sidebar-user-avatar">
-                                        <a href="page_ready_user_profile.html">
-                                            <img src="img/placeholders/avatars/avatar2.jpg" alt="avatar">
-                                        </a>
+                                        <img gravatar-src-once="user.email">
                                     </div>
-                                    <div class="sidebar-user-name">assaf</div>
-                                    <div class="sidebar-user-links">
-                                        <a href="page_ready_user_profile.html" data-toggle="tooltip" data-placement="bottom" title="Profile"><i class="gi gi-user"></i></a>
-                                        <a href="page_ready_inbox.html" data-toggle="tooltip" data-placement="bottom" title="Messages"><i class="gi gi-envelope"></i></a>
-                                        <!-- Opens the user settings modal that can be found at the bottom of each page (page_footer.html in PHP version) -->
-                                        <a href="#modal-user-settings" data-toggle="modal" class="enable-tooltip" data-placement="bottom" title="Settings"><i class="gi gi-cogwheel"></i></a>
-                                        <a href="login.html" data-toggle="tooltip" data-placement="bottom" title="Logout"><i class="gi gi-exit"></i></a>
-                                    </div>
+                                    <h4>{{user.first_name}} {{user.last_name}}</h4>
+                                    <br/>
+                                    <button class="btn btn-xs btn-warning" ng-click="logout()"><span class="gi gi-log_out"></span> Logout</button>
                                 </div>
                                 <div ng-switch-default="" class="small text-center">
 
                                     <p>Login to hack your friends!
-                                    <button class="btn btn-info" ng-click="openModal()"><span class="gi gi-log_in"></span> Login</button></p>
+                                    <button class="btn btn-info" ng-click="openLoginModal()"><span class="gi gi-log_in"></span> Login</button></p>
 
                                     <span class="text-muted">
                                     Not yet registered? Now is the time!</span><br/>
-                                    <button class="btn btn-xs btn-primary"><span class="gi gi-registration_mark"></span> Register</button>
+                                    <button class="btn btn-xs btn-primary" ng-click="openRegisterModal()"><span class="gi gi-registration_mark"></span> Register</button>
                                 </div>
                             </div>
                         </div>
                         <!-- END User Info -->
 
-                        <!-- Theme Colors -->
-                        <!-- Change Color Theme functionality can be found in js/app.js - templateOptions() -->
-                        <!--<ul class="sidebar-section sidebar-themes clearfix">-->
-                            <!--<li class="active">-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-default themed-border-default" data-theme="default" data-toggle="tooltip" title="Default Blue"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-night themed-border-night" data-theme="css/themes/night.css" data-toggle="tooltip" title="Night"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-amethyst themed-border-amethyst" data-theme="css/themes/amethyst.css" data-toggle="tooltip" title="Amethyst"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-modern themed-border-modern" data-theme="css/themes/modern.css" data-toggle="tooltip" title="Modern"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-autumn themed-border-autumn" data-theme="css/themes/autumn.css" data-toggle="tooltip" title="Autumn"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-flatie themed-border-flatie" data-theme="css/themes/flatie.css" data-toggle="tooltip" title="Flatie"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-spring themed-border-spring" data-theme="css/themes/spring.css" data-toggle="tooltip" title="Spring"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-fancy themed-border-fancy" data-theme="css/themes/fancy.css" data-toggle="tooltip" title="Fancy"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                                <!--<a href="javascript:void(0)" class="themed-background-dark-fire themed-border-fire" data-theme="css/themes/fire.css" data-toggle="tooltip" title="Fire"></a>-->
-                            <!--</li>-->
-                        <!--</ul>-->
-                        <!-- END Theme Colors -->
-
                         <!-- Sidebar Navigation -->
-                        <ul class="sidebar-nav">
+                        <ul class="sidebar-nav" ng-controller="NavbarController">
                             <li>
                                 <a href="#/" class=" active"><i class="gi gi-home sidebar-nav-icon"></i>Home</a>
                             </li>
-                            <li>
+                            <li ng-if="isUserAuthenticated()">
                                 <a href="#/dashboard" class=" active"><i class="gi gi-stopwatch sidebar-nav-icon"></i>Dashboard</a>
                             </li>
                             <li class="sidebar-header">
                                 <span class="sidebar-header-options clearfix">
                                     <a href="javascript:void(0)"
                                                                           data-toggle="tooltip"
-                                                                          title="Create the most amazing pages with the widget kit!"><i
+                                                                          title="Explore your options to Hack your friends!"><i
                                         class="gi gi-lightbulb"></i></a></span>
                                 <span class="sidebar-header-title">Get Started</span>
                             </li>
-                            <li>
-                                <a href="#/challenge"><i class="gi gi-star sidebar-nav-icon"></i>Challenge</a>
+                            <li ng-if="isUserAuthenticated()">
+                                <a href="#/challenge" ><i class="gi gi-star sidebar-nav-icon"></i>Challenge</a>
                             </li>
                             <li>
                                 <a href="#/aboutShassaro"><i class="gi gi-book sidebar-nav-icon"></i>About ShassAro</a>
@@ -201,92 +176,13 @@
                         <!-- END Template Options -->
                     </ul>
                     <!-- END Left Header Navigation -->
-
-                    <!-- Search Form -->
-                    <!--<form action="page_ready_search_results.html" method="post" class="navbar-form-custom" role="search">-->
-                        <!--<div class="form-group">-->
-                            <!--<input type="text" id="top-search" name="top-search" class="form-control" placeholder="Search..">-->
-                        <!--</div>-->
-                    <!--</form>-->
-                    <!-- END Search Form -->
-
-                    <!-- Right Header Navigation -->
-                    <ul class="nav navbar-nav-custom pull-right">
-                        <!-- User Dropdown -->
-                        <li class="dropdown">
-                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="img/placeholders/avatars/avatar2.jpg" alt="avatar"> <i class="fa fa-angle-down"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-custom dropdown-menu-right">
-                                <li class="dropdown-header text-center">Account</li>
-                                <li>
-                                    <a href="page_ready_timeline.html">
-                                        <i class="fa fa-clock-o fa-fw pull-right"></i>
-                                        <span class="badge pull-right">10</span>
-                                        Updates
-                                    </a>
-                                    <a href="page_ready_inbox.html">
-                                        <i class="fa fa-envelope-o fa-fw pull-right"></i>
-                                        <span class="badge pull-right">5</span>
-                                        Messages
-                                    </a>
-                                    <a href="page_ready_pricing_tables.html"><i class="fa fa-magnet fa-fw pull-right"></i>
-                                        <span class="badge pull-right">3</span>
-                                        Subscriptions
-                                    </a>
-                                    <a href="page_ready_faq.html"><i class="fa fa-question fa-fw pull-right"></i>
-                                        <span class="badge pull-right">11</span>
-                                        FAQ
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="page_ready_user_profile.html">
-                                        <i class="fa fa-user fa-fw pull-right"></i>
-                                        Profile
-                                    </a>
-                                    <!-- Opens the user settings modal that can be found at the bottom of each page (page_footer.html in PHP version) -->
-                                    <a href="#modal-user-settings" data-toggle="modal">
-                                        <i class="fa fa-cog fa-fw pull-right"></i>
-                                        Settings
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="page_ready_lock_screen.html"><i class="fa fa-lock fa-fw pull-right"></i> Lock Account</a>
-                                    <a href="login.html"><i class="fa fa-ban fa-fw pull-right"></i> Logout</a>
-                                </li>
-                                <li class="dropdown-header text-center">Activity</li>
-                                <li>
-                                    <div class="alert alert-success alert-alt">
-                                        <small>5 min ago</small><br>
-                                        <i class="fa fa-thumbs-up fa-fw"></i> You had a new sale ($10)
-                                    </div>
-                                    <div class="alert alert-info alert-alt">
-                                        <small>10 min ago</small><br>
-                                        <i class="fa fa-arrow-up fa-fw"></i> Upgraded to Pro plan
-                                    </div>
-                                    <div class="alert alert-warning alert-alt">
-                                        <small>3 hours ago</small><br>
-                                        <i class="fa fa-exclamation fa-fw"></i> Running low on space<br><strong>18GB in use</strong> 2GB left
-                                    </div>
-                                    <div class="alert alert-danger alert-alt">
-                                        <small>Yesterday</small><br>
-                                        <i class="fa fa-bug fa-fw"></i> <a href="javascript:void(0)" class="alert-link">New bug submitted</a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                        <!-- END User Dropdown -->
-                    </ul>
-                    <!-- END Right Header Navigation -->
                 </header>
                 <!-- END Header -->
 
                 <!-- Page content -->
 
                 <div id="page-content">
-                    <div ng-view class="container-fluid"></div>
+                    <div ng-view class="container-fluid animation-fadeInRight"></div>
                 </div>
                 <!-- END Page Content -->
 
@@ -304,9 +200,6 @@
             <!-- END Main Container -->
         </div>
         <!-- END Page Container -->
-
-        <!--Login modal-->
-        <div ng-controller="LoginController"></div>
 
         <!-- Scroll to top link, initialized in js/app.js - scrollToTop() -->
         <a href="#" id="to-top"><i class="fa fa-angle-double-up"></i></a>
@@ -382,12 +275,19 @@
         <script>!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-1.11.1.min.js"%3E%3C/script%3E'));</script>
 
         <!--Angular-->
+
         <script src="bower_components/angular/angular.js"></script>
         <script src="bower_components/angular-route/angular-route.js"></script>
         <script src="bower_components/angular-resource/angular-resource.js"></script>
         <script src="bower_components/angular-no-vnc/dist/angular-noVNC.js"></script>
-        <script src="bower_components/angular-timer/dist/angular-timer.js"></script>
         <script src="bower_components/angular-websocket/angular-websocket.js"></script>
+        <script src="bower_components/angular-gravatar/build/angular-gravatar.js"></script>
+        <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+
+        <script src="bower_components/momentjs/min/moment-with-locales.js"></script>
+        <script src="bower_components/humanize-duration/humanize-duration.js"></script>
+        <script src="bower_components/angular-timer/dist/angular-timer.js"></script>
+
 
         <!-- Bootstrap.js, Jquery plugins and Custom JS code -->
         <script src="js/vendor/bootstrap.min.js"></script>
@@ -402,12 +302,31 @@
         <script src="services/Tags.js"></script>
         <script src="services/GameRequests.js"></script>
         <script src="services/ActiveGames.js"></script>
-        <script src="services/LoginService.js"></script>
+        <script src="services/AuthenticationService.js"></script>
+        <script src="services/Quotes.js"></script>
 
+        <script src="controllers/NavbarController.js"></script>
         <script src="controllers/ChallengeController.js"></script>
         <script src="controllers/GameRequestController.js"></script>
         <script src="controllers/GameController.js"></script>
-        <script src="controllers/LoginController.js"></script>
+        <script src="controllers/AuthenticationController.js"></script>
 
+        <script type="application/javascript">
+
+            Date.prototype.addMinutes = function (minutes) {
+                var copiedDate = new Date(this.getTime());
+                return new Date(copiedDate.getTime() + minutes * 60000);
+            };
+
+            ShassaroApp.controller('TimerController', function ($scope) {
+                $scope.startTime = new Date().addMinutes(-14);
+                $scope.durationInMinuts = 20;
+                $scope.endTime = $scope.startTime.addMinutes($scope.durationInMinuts);
+
+                $scope.startTime = $scope.startTime.getTime();
+                $scope.endTime = $scope.endTime.getTime();
+            });
+
+        </script>
     </body>
 </html>

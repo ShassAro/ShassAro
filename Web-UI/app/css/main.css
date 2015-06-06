@@ -1,4 +1,4 @@
-.ng-invalid { border-color: #cc0000;}
+.form-group .ng-invalid { border-color: #cc0000; background-color: rgba(255, 50, 50, 0.2)}
 .ng-valid { border-color: #b8e5cb; }
 
 .img-resize {
@@ -18,6 +18,14 @@
 
 .homepage-fontsize {
     font-size: 20px;
+}
+
+#sidebar {
+    z-index: 3;
+    height: 100%;
+}
+#main-container {
+    z-index: 2;
 }
 
 /*
@@ -108,7 +116,8 @@ body.page-loading #page-container {
 
 /* Main Structure */
 body {
-    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    font-family: "Calibri", serif !important;
     color: #394263;
     font-size: 13px;
     background-color: #222222;
@@ -499,8 +508,8 @@ a.sidebar-title:focus {
 /* Sidebar User */
 .sidebar-user {
     padding-left: 88px;
-    background: url('../img/template/ie8_opacity_light_10.png') repeat;
-    background: rgba(255, 255, 255, 0.1);
+    /*background: url('../img/template/ie8_opacity_light_10.png') repeat;*/
+    /*background: rgba(255, 255, 255, 0.1);*/
 }
 
 .sidebar-user-avatar {
@@ -1220,7 +1229,8 @@ a.sidebar-title:focus {
     position: absolute;
     top: 0;
     left: 0;
-    height: 150px;
+    /*height: 150px;*/
+    width: 100%;
 }
 
 .widget-advanced .widget-background-map {
@@ -1925,7 +1935,8 @@ a[data-toggle="lightbox-image"]:hover img {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    font-family: Calibri, serif;
     font-weight: 300;
 }
 
