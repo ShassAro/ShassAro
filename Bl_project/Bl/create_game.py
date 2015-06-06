@@ -5,7 +5,9 @@ import requests
 from rest_framework import status
 from bl_exceptions import DeployError, DockerManagerNotAvailableError, DockerServerNotAvailableError
 from models import Shassaro, GameUser, DockerManager, DockerServer
+import logging
 
+logger = logging.getLogger(__name__)
 
 def generate_goal():
     """
@@ -108,6 +110,8 @@ def deploy_shassaros(shassaros):
     if not all(isinstance(x, Shassaro) for x in shassaros):
         raise TypeError("input must be of type {0}".format(Shassaro))
 
+    logger.debug("Start with deploy shassaro routine")
+
     managers = DockerManager.objects.all()
     if len(managers) == 0:
         raise DockerManagerNotAvailableError()
@@ -119,13 +123,17 @@ def deploy_shassaros(shassaros):
 
     docker_manager_url += "deploy"
 
+    logger.debug("Url of deploy: {0}".format(docker_manager_url))
+
     docker_servers_dict = generate_docker_server_dict()
     shassaros_dict = generate_shassaros_dict(shassaros)
 
     try:
+        logger.debug("POSTing the manager.")
         # make the request
         response = requests.post(docker_manager_url,
                                  json=generate_final_dict_to_send(docker_servers_dict, shassaros_dict))
+        logger.debug("Done with deploy!")
     except Exception as e:
         raise DeployError("Error sending a request to the docker manager", e)
 
@@ -135,6 +143,7 @@ def deploy_shassaros(shassaros):
 
     # parse the response & populate the shassaro objects
     try:
+        logger.debug("Parsing response")
         shassaros_json = response.json()
         for i in range(shassaros.count()):
             shassaros[i].shassaro_ip = shassaros_json["shassaros"][i]["shassaro_ip"]
@@ -147,6 +156,8 @@ def deploy_shassaros(shassaros):
             user_temp_obj.save()
 
             shassaros[i].save()
+
+        logger.debug("Done with parsing. returning shassaro.")
 
         return shassaros
 

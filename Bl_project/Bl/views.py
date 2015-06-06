@@ -16,6 +16,9 @@ from create_game import *
 from django.db.models import Q
 from ws4redis.publisher import RedisPublisher
 from ws4redis.redis_store import RedisMessage
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TagViewSet(ModelViewSet):
@@ -95,6 +98,8 @@ class GameRequestViewSet(ModelViewSet):
             username = request.DATA["username"]
             tags = request.DATA.getlist("tags")
 
+            logger.debug("Got a game request for user {0}".format(username))
+
         except Exception as e:
             return Response(data=e.__dict__, status=status.HTTP_400_BAD_REQUEST)
 
@@ -124,29 +129,40 @@ class GameRequestViewSet(ModelViewSet):
 
             if (len(match) == 0):
 
+                logger.debug("No match found.. waiting for next player.")
                 return Response(data=serializers.serialize("json",[game_request]), status=status.HTTP_201_CREATED)
 
             match = match[0]
+            logger.debug("Found match! competing with: {0}".format(match.username))
 
             # Lets create websockets endpoint so we can communicate with the remote user also
             remote_user_publisher = RedisPublisher(facility=match.username, broadcast=True)
+
+            logger.debug("Picking up images..")
 
             # Get the images
             picked_images = [Image.objects.get(docker_name=image_name) for
                              image_name in self.pick_best_image(game_request.tags, match.tags)]
 
+            logger.debug("Done picking images.")
 
             game_request.status = self.get_a_game_request_status(GameRequestStatuses.DEPLOYING)
             match.status = self.get_a_game_request_status(GameRequestStatuses.DEPLOYING)
             game_request.save()
             match.save()
 
+            logger.debug("Mark both requests as deploying.")
+
             # Now we need to notify the users that we have found them a user, and their status is deploying
             user_publisher.publish_message(RedisMessage(serializers.serialize("json",[game_request])))
             remote_user_publisher.publish_message(RedisMessage(serializers.serialize("json",[match])))
 
+            logger.debug("Notifyed users via websockets.")
+
+            logger.debug("Start with create game routine.")
             created_game = CreateGame.create([username, match.username], picked_images)
 
+            logger.debug("Done with create game! notify as done.")
             game_request.status = self.get_a_game_request_status(GameRequestStatuses.DONE)
             match.status = self.get_a_game_request_status(GameRequestStatuses.DONE)
             game_request.save()
@@ -157,17 +173,26 @@ class GameRequestViewSet(ModelViewSet):
             game_request.save()
             match.save()
 
+            logger.debug("Marked the objects as done and attached the game.")
+
             # And notify that its done
             user_publisher.publish_message(RedisMessage(serializers.serialize("json",[game_request])))
             remote_user_publisher.publish_message(RedisMessage(serializers.serialize("json",[match])))
+
+            logger.debug("Notified via websockets that the gamerequest is done")
 
             # Now, we need to create another websocket to let the web know about the active game
             user_publisher = RedisPublisher(facility="{0}-game".format(username), broadcast=True)
             remote_user_publisher = RedisPublisher(facility="{0}-game".format(match.username), broadcast=True)
 
+            logger.debug("2nd websockets created")
+
             user_publisher.publish_message(RedisMessage(json.dumps(GenerateActiveGame(username))))
             remote_user_publisher.publish_message(RedisMessage(json.dumps(GenerateActiveGame(match.username))))
 
+            logger.debug("Notified the new websocket about the active game.")
+
+            logger.debug("GAME REQUEST ALL DONE")
             return Response(data=serializers.serialize("json",[game_request]), status=status.HTTP_201_CREATED)
 
         except Exception as e:
@@ -205,6 +230,8 @@ class CreateGame():
     def create(participants, images):
         try:
 
+            logger.debug("Building a game object")
+
             # build a game instance
             game = Game.objects.create()
             for i in range(2):
@@ -212,8 +239,16 @@ class CreateGame():
                 game.shassaros.add(shassaro)
                 game.images.add(images[i])
 
+            logger.debug("Game objects build!")
+
+            logger.debug("Start with the deploy.")
+
             # deploy the shassaros
             deploy_shassaros(game.shassaros.all())
+
+            logger.debug("Done deploying!")
+
+            logger.debug("Start to fill the game object.")
 
             # Fill out game
             game.start_time = datetime.now().replace(tzinfo=None)
@@ -229,6 +264,9 @@ class CreateGame():
 
             # save to db and return
             game.save()
+
+            logger.debug("All done with filling the game object.")
+
             return game
 
         except Exception as e:
@@ -350,8 +388,8 @@ class ActiveGameGoalCheckViewSet(APIView):
             userA_publisher = RedisPublisher(facility="{0}-game".format(gameObj[0].userA), broadcast=True)
             userB_publisher = RedisPublisher(facility="{0}-game".format(gameObj[0].userB), broadcast=True)
 
-            userA_publisher.publish_message(RedisMessage(GenerateActiveGame(gameObj[0].userA)))
-            userB_publisher.publish_message(RedisMessage(GenerateActiveGame(gameObj[0].userB)))
+            userA_publisher.publish_message(RedisMessage(json.dumps(GenerateActiveGame(gameObj[0].userA))))
+            userB_publisher.publish_message(RedisMessage(json.dumps(GenerateActiveGame(gameObj[0].userB))))
 
         returnJson = {
             "status" : found,
