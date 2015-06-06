@@ -134,15 +134,22 @@ LOGGING = {
             'filename': 'bl.log',
             'formatter': 'verbose'
         },
+        'syslog':{
+            'level':'DEBUG',
+            'class': 'logging.handlers.SysLogHandler',
+            'formatter': 'verbose',
+            'facility': 'local1',
+            'address': '/dev/log'
+        }
     },
     'loggers': {
         'django': {
-            'handlers':['file'],
+            'handlers':['syslog'],
             'propagate': True,
             'level':'ERROR',
         },
         'Bl': {
-            'handlers': ['file'],
+            'handlers': ['syslog'],
             'level': 'DEBUG',
         },
     }
