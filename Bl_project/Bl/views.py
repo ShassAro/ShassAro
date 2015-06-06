@@ -499,10 +499,14 @@ class ValidateToken(APIView):
 
     def get(self, request, *args, **kwargs):
 
-        if len(Token.objects.filter(key=request.token)) != 0:
-            return Response(data=True, status=status.HTTP_200_OK)
-        else:
-            return Response(data=False, status=status.HTTP_200_OK)
+        try:
+            if len(Token.objects.filter(key=request.token)) != 0:  # Token is valid
+                return Response(data=True, status=status.HTTP_200_OK)
+            else:
+                return Response(data=False, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class AuthView(APIView):
