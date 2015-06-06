@@ -10,6 +10,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions
 from generate_active_game import GenerateActiveGame
 from end_game import end_game
+from scavage import scavage
 from serializers import *
 from models import *
 from create_game import *
@@ -360,23 +361,17 @@ class ActiveGameGoalCheckViewSet(APIView):
 
         return Response(returnJson, status=status.HTTP_200_OK)
 
+
 class ScavageViewSet(APIView):
 
     permission_classes = (permissions.IsAdminUser,)
 
     @staticmethod
-    def post(self, *args, **kw):
+    def post(self):
 
-        # Get all games
-        games = Game.objects.all()
+        response = scavage()
+        return response
 
-        for game in games:
-            max_time = (game.start_time + timedelta(0, (game.duration_minutes+30) * 60)).replace(tzinfo=None)
-            now_time = datetime.now().replace(tzinfo=None)
-            if (max_time < now_time):
-                return Response('{"status": "Games running in over-time found."}', status=status.HTTP_302_FOUND)
-
-        return Response('{"status": "Nothing to scavage."}', status=status.HTTP_200_OK)
 
 class ActiveGameViewSet(APIView):
 
