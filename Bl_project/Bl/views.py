@@ -313,10 +313,7 @@ class DockerServerViewSet(ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
 
 
-class ConfigurationsViewSet(ModelViewSet):
-    queryset = Configurations.objects.all()
-    serializer_class = ConfigurationsSerializer
-    permission_classes = (permissions.IsAdminUser,)
+
 
 class ActiveGameGoalCheckViewSet(APIView):
 

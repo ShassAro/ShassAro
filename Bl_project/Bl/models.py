@@ -100,8 +100,3 @@ class DockerServer(models.Model):
     protocol = models.CharField(max_length=100)
     ip = models.GenericIPAddressField(unique=True)
     port = models.PositiveIntegerField()
-
-
-class Configurations(models.Model):
-    docker_managers = models.OneToOneField(DockerManager)
-    docker_servers = models.OneToOneField(DockerServer)

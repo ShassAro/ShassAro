@@ -89,12 +89,6 @@ class DockerServerSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('pk', 'name', 'protocol', 'ip', 'port')
 
 
-class ConfigurationsSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Configurations
-        fields = ('pk', 'docker_server')
-
-
 class QuotesSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Quotes
