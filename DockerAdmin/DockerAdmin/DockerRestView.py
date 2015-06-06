@@ -9,6 +9,9 @@ from DockerManager import DockerDeploy, DockerKill, DockerScavage
 from ShassAro import ShassAro, ShassaroSerializer
 from Exceptions import *
 from ShassaroContainer import ShassaroContainerSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DockerDeployRestView(APIView):
@@ -50,6 +53,8 @@ class DockerDeployRestView(APIView):
         except Exception as e:
             return Response(e.__dict__, status=status.HTTP_400_BAD_REQUEST)
 
+        logger.debug("Creating deploy class")
+
         # Pass it to Dockermanager
         deployClass = DockerDeploy(shassaroInstances, dockerServers, *args, **kw)
 
@@ -57,11 +62,18 @@ class DockerDeployRestView(APIView):
         response=""
 
         try:
+
+            logger.debug("Starting deploy (restview)")
             # Get the result
             result = deployClass.deploy()
 
+            logger.debug("Done with deploy (restview)")
+
             shaContainer = ShassaroContainerSerializer(result)
 
+            logger.debug("Serialized output.")
+
+            logger.debug("Returning 200 OK.")
             response = Response(shaContainer.data, status=status.HTTP_200_OK)
 
         except ShassAroException as e:
