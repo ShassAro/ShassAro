@@ -37,6 +37,11 @@
     height: 100%;
 }
 
+.result-table-img {
+    width: 40px;
+    height: 40px;
+}
+
 /*
  *  Document   : main.css
  *  Author     : pixelcave
