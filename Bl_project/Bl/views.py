@@ -494,19 +494,22 @@ class QuietBasicAuthentication(BasicAuthentication):
 
 
 class ValidateToken(APIView):
-    authentication_classes = (QuietBasicAuthentication,)
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
 
         try:
-            if len(Token.objects.filter(key=request.token)) != 0:  # Token is valid
+            token_key = request.DATA['token']
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if len(Token.objects.filter(key=token_key)) != 0:  # Token is valid
                 return Response(data=True, status=status.HTTP_200_OK)
             else:
                 return Response(data=False, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AuthView(APIView):
