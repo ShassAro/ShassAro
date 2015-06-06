@@ -10,12 +10,12 @@ def end_game(game_obj, username_winner, username_loser, game_timed_out = False):
 
     # Create the kill command json
     kill_json =  {
-            "dockerServerIp": game_obj.shassaros.first().docker_server_ip,
-            "dockerId": [
-                game_obj.shassaros.all()[0].docker_id,
-                game_obj.shassaros.all()[1].docker_id
-            ]
-        }
+        "dockerServerIp": game_obj.shassaros.first().docker_server_ip,
+        "dockerId": [
+            game_obj.shassaros.all()[0].docker_id,
+            game_obj.shassaros.all()[1].docker_id
+        ]
+    }
 
     # Get the docker manager
     managers = DockerManager.objects.all()
