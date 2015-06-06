@@ -492,6 +492,19 @@ class QuietBasicAuthentication(BasicAuthentication):
     def authenticate_header(self, request):
         return 'xBasic realm="%s"' % self.www_authenticate_realm
 
+
+class ValidateToken(APIView):
+    authentication_classes = (QuietBasicAuthentication,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get(self, request, *args, **kwargs):
+
+        if len(Token.objects.filter(key=request.token)) != 0:
+            return Response(data=True, status=status.HTTP_200_OK)
+        else:
+            return Response(data=False, status=status.HTTP_200_OK)
+
+
 class AuthView(APIView):
     authentication_classes = (QuietBasicAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
