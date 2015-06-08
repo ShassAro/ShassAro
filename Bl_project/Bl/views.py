@@ -492,7 +492,7 @@ class QuietBasicAuthentication(BasicAuthentication):
 
 class ValidateToken(APIView):
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
 
         try:
             token_key = request.DATA['token']
