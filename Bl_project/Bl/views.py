@@ -11,6 +11,7 @@ from rest_framework import permissions
 from generate_active_game import GenerateActiveGame
 from end_game import end_game
 from scavage import scavage
+from forfeit import forfeit
 from serializers import *
 from models import *
 from create_game import *
@@ -415,6 +416,26 @@ class ScavageViewSet(APIView):
 
         response = scavage()
         return response
+
+
+class ForfeitViewSet(APIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def post(self, request, *args, **kwargs):
+
+        try:
+            username = request.DATA['username']
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            response = forfeit(username=username)
+            return response
+
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ActiveGameViewSet(APIView):
