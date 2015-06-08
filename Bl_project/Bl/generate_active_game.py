@@ -6,12 +6,12 @@ def GenerateActiveGame(username):
 
     user_index = 0
     # Get the game object. Try userA first.
-    gameObj = Game.objects.filter(userA=username)
+    gameObj = Game.objects.filter(userA=username).order_by("-start_time")
 
     if (len(gameObj) == 0):
 
         # Lets try userB
-        gameObj = Game.objects.filter(userB=username)
+        gameObj = Game.objects.filter(userB=username).order_by("-start_time")
         user_index = 1
 
     # If none found -> game is over. return gameresult.

@@ -277,7 +277,7 @@ class CreateGame():
         except Exception as e:
             if game is not None:
                 if game.shassaros is not None:
-                    for shassaro in game.shassaros:
+                    for shassaro in game.shassaros.all():
                         shassaro.delete()
                 game.delete()
             raise CreateGameError(e)
