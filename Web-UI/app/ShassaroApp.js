@@ -43,7 +43,7 @@ var ShassaroApp = angular
 
             }).
             when('/aboutShassaro', {
-                templateUrl: 'views/aboutShassaro.html'
+                templateUrl: 'views/AboutShassaro.html'
 
             }).
             when('/dashboard', {
@@ -59,5 +59,5 @@ var ShassaroApp = angular
             otherwise('/challenge');
     }]);
 
-ShassaroApp.api_host_url = 'http://10.0.0.8:1234';
-//ShassaroApp.api_host_url = 'http://www.shassaro.com/api/bl';
+//ShassaroApp.api_host_url = 'http://10.0.0.8:1234';
+ShassaroApp.api_host_url = 'http://www.shassaro.com/api/bl';
