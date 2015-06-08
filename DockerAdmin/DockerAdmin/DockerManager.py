@@ -223,7 +223,8 @@ class DockerDeploy():
                         "--listen", str(localPort)]
 
             # Start websocket to container 1
-            subprocess.Popen(arguments)
+            subprocess.Popen(arguments, stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT)
             #os.system(cmd)
 
             # Add it to shassaro
@@ -251,7 +252,9 @@ class DockerDeploy():
                         "--listen", str(localPort)]
 
             # Start websocket to container 2
-            subprocess.Popen(arguments)
+            subprocess.Popen(arguments, stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT)
+
 
             # Add it to shassaro
             self.shassarosContainer.shassaros[1].participants["vnc_port"] = localPort

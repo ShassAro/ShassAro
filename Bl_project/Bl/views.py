@@ -277,7 +277,7 @@ class CreateGame():
         except Exception as e:
             if game is not None:
                 if game.shassaros is not None:
-                    for shassaro in game.shassaros:
+                    for shassaro in game.shassaros.all():
                         shassaro.delete()
                 game.delete()
             raise CreateGameError(e)
@@ -313,10 +313,7 @@ class DockerServerViewSet(ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
 
 
-class ConfigurationsViewSet(ModelViewSet):
-    queryset = Configurations.objects.all()
-    serializer_class = ConfigurationsSerializer
-    permission_classes = (permissions.IsAdminUser,)
+
 
 class ActiveGameGoalCheckViewSet(APIView):
 
@@ -491,6 +488,26 @@ class QuietBasicAuthentication(BasicAuthentication):
     # rather it can check credentials before a session cookie has been granted.
     def authenticate_header(self, request):
         return 'xBasic realm="%s"' % self.www_authenticate_realm
+
+
+class ValidateToken(APIView):
+
+    def post(self, request, *args, **kwargs):
+
+        try:
+            token_key = request.DATA['token']
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if len(Token.objects.filter(key=token_key)) != 0:  # Token is valid
+                return Response(data=True, status=status.HTTP_200_OK)
+            else:
+                return Response(data=False, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class AuthView(APIView):
     authentication_classes = (QuietBasicAuthentication,)
