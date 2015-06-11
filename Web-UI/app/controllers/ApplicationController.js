@@ -18,11 +18,6 @@ ShassaroApp.controller('ApplicationController', function ($scope, $rootScope, AU
     };
 
     Session.tryRestore();
-
-    //$scope.apiHostUrl = 'http://www.shassaro.com/api/bl';
-    $scope.apiHostUrl = 'http://10.0.0.9:1234';
-    //$scope.websocketUrl = 'ws://www.shassaro.com/ws/';
-    $scope.websocketUrl = 'ws://10.0.0.9:1234/ws/';
 });
 
 ShassaroApp.run(function ($rootScope, AUTH_EVENTS, AuthenticationService) {

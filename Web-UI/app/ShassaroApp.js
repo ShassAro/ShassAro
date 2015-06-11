@@ -56,14 +56,14 @@ var ShassaroApp = angular
 
             }).
             when('/aboutShassaro', {
-                templateUrl: 'views/aboutShassaro.html'
+                templateUrl: 'views/AboutShassaro.html'
 
             }).
             when('/dashboard', {
                 templateUrl: 'views/DashboardView.html'
             }).
             when('/', {
-                templateUrl: 'views/main.html'
+                templateUrl: 'views/Main.html'
             }).
             otherwise('/');
     }]);
@@ -71,6 +71,3 @@ var ShassaroApp = angular
 ShassaroApp.config(function($resourceProvider) {
     $resourceProvider.defaults.stripTrailingSlashes = false;
 });
-
-ShassaroApp.api_host_url = 'http://10.0.0.9:1234';
-//ShassaroApp.api_host_url = 'http://www.shassaro.com/api/bl';

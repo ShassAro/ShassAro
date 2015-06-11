@@ -1,7 +1,7 @@
 'use strict';
 
-ShassaroApp.factory('Tags', function ($resource) {
-    return $resource(ShassaroApp.api_host_url + '/tags', {}, {
+ShassaroApp.factory('Tags', function ($resource, SETTINGS) {
+    return $resource(SETTINGS.apiUrl + '/tags', {}, {
         get: {isArray: true}
     });
 });

@@ -1,8 +1,8 @@
 'use strict';
 
-ShassaroApp.factory('ActiveGames', function ($resource) {
-    var res = $resource(ShassaroApp.api_host_url + '/active_game/:username', {},{
-        verifyGoal: {method: 'GET', url: ShassaroApp.api_host_url + '/active_game/:username/goal'}
+ShassaroApp.factory('ActiveGames', function ($resource, SETTINGS) {
+    var res = $resource(SETTINGS.apiUrl + '/active_game/:username', {},{
+        verifyGoal: {method: 'GET', url: SETTINGS.apiUrl + '/active_game/:username/goal'}
     });
 
     //return res;

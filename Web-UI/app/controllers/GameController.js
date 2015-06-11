@@ -1,8 +1,14 @@
 'use strict';
 
-ShassaroApp.controller('GameController', function ($scope, $websocket, $interval, $location, ActiveGames, Users) {
-    var socket = $websocket($scope.websocketUrl+$scope.currentUser.username+'-game?subscribe-broadcast');
-    socket.onMessage(function (event) {
+ShassaroApp.factory('GameSocket', function ($websocket, SETTINGS, $rootScope) {
+    var socket = $websocket(SETTINGS.wsUrl + $rootScope.currentUser.username + '-game?subscribe-broadcast');
+    return {
+        onMessage: socket.onMessage
+    };
+});
+
+ShassaroApp.controller('GameController', function ($scope, $interval, $location, GameSocket, ActiveGames, Users) {
+    GameSocket.onMessage(function (event) {
         var data = JSON.parse(event.data);
         if(angular.isDefined(data.id)){
             // game is over

@@ -1,7 +1,7 @@
 'use strict';
 
-ShassaroApp.factory('Users', function ($resource, $q) {
-    var resource = $resource(ShassaroApp.api_host_url + '/users/:username');
+ShassaroApp.factory('Users', function ($resource, SETTINGS) {
+    var resource = $resource(SETTINGS.apiUrl + '/users/:username');
     return resource;
 
     //return {
@@ -31,7 +31,7 @@ ShassaroApp.constant('AUTH_EVENTS',{
     notAuthorized: 'auth-not-authorized'
 });
 
-ShassaroApp.service('Session', function ($http, $cookies, $rootScope, Users, AUTH_EVENTS) {
+ShassaroApp.service('Session', function ($http, $cookies, $rootScope, Users, AUTH_EVENTS, SETTINGS) {
     // Init session
     var getToken = function () {
         var cookie = $cookies.get('auth_token');
@@ -70,7 +70,7 @@ ShassaroApp.service('Session', function ($http, $cookies, $rootScope, Users, AUT
             var session = this;
             $http({
                 method: 'POST',
-                url: ShassaroApp.api_host_url + '/validate_token/',
+                url: SETTINGS.apiUrl + '/validate_token/',
                 data: {'token': token}
             }).success(function (isValid) {
                 if (isValid) {
@@ -100,7 +100,7 @@ ShassaroApp.service('Session', function ($http, $cookies, $rootScope, Users, AUT
     }
 });
 
-ShassaroApp.factory('AuthenticationService', function ($http, $q, Session) {
+ShassaroApp.factory('AuthenticationService', function ($http, $q, Session, SETTINGS) {
     var authService = {};
 
     authService.login = function (credentials) {
@@ -108,7 +108,7 @@ ShassaroApp.factory('AuthenticationService', function ($http, $q, Session) {
         return $http(
             {
                 method: 'POST',
-                url: ShassaroApp.api_host_url + '/login/',
+                url: SETTINGS.apiUrl + '/login/',
                 headers: {
                     "Authorization": "Basic " + authHeader
                 }
@@ -122,7 +122,7 @@ ShassaroApp.factory('AuthenticationService', function ($http, $q, Session) {
         return $http(
             {
                 method: 'DELETE',
-                url: ShassaroApp.api_host_url + '/logout/'
+                url: SETTINGS.apiUrl + '/logout/'
             })
             .success(function () {
                 Session.destroy()
@@ -133,7 +133,7 @@ ShassaroApp.factory('AuthenticationService', function ($http, $q, Session) {
         var deferred = $q;
         $http({
             method: 'POST',
-            url: ShassaroApp.api_host_url + '/validate_token/',
+            url: SETTINGS.apiUrl + '/validate_token/',
             data: {'token': token}
         }).success(function (isValid) {
             if(isValid){
@@ -185,135 +185,135 @@ ShassaroApp.service('AuthenticationResolver', function ($q, $rootScope, AUTH_EVE
     }
 });
 
-ShassaroApp.factory('AuthenticationService_OLD', function ($http, $cookies, $q, Users) {
-
-    var isAuthenticated = false;
-    var username = null;
-
-    function validateToken(token) {
-        return $http({
-            method: 'POST',
-            url: ShassaroApp.api_host_url + '/validate_token/',
-            data: {'token': token}
-        });
-    }
-
-    var auth = {
-        userDataResolved: $q.defer(),
-        isAuthenticated: function () {
-            var deferred = $q.defer();
-            var result = {
-                true: deferred.promise.then,
-                false: deferred.promise.catch
-            };
-
-            var token = auth.getToken();
-            if(token == null){
-                deferred.reject();
-            }
-            else {
-                validateToken(token)
-                    .success(function (tokenIsValid) {
-                        if (tokenIsValid) {
-                            deferred.resolve();
-                        }
-                        else {
-                            deferred.reject();
-                        }
-                    });
-            }
-            return result;
-        },
-        getToken: function () {
-            var cookie = $cookies.get('auth_token');
-            if(!cookie)
-                return null;
-
-            return cookie.split(':')[1];
-        },
-        getUsername: function () {
-            var cookie = $cookies.get('auth_token');
-            if(!cookie)
-                return null;
-
-            return cookie.split(':')[0];
-        },
-        setCookie: function (username, token) {
-            return $cookies.put('auth_token', username + ':' + token);
-        },
-        logoutUser : function () {
-            $cookies.remove('auth_token');
-            delete $http.defaults.headers.common.Authorization;
-            delete ShassaroApp.user;
-        },
-        setTokenHeader: function (token) {
-            $http.defaults.headers.common.Authorization = 'Token ' + token;
-        },
-        setAuthenticatedUserInfo: function (username) {
-            if(username == null)
-                username = this.getUsername();
-
-            Users.get({username: username}).$promise.then(function (user) {ShassaroApp.user = user;});
-            this.userDataResolved.resolve();
-        }
-    };
-
-    function setAuthenticationDetails(token){
-        if(!angular.isDefined(token))
-            var token = auth.getToken();
-
-        auth.setTokenHeader(token);
-        auth.setAuthenticatedUserInfo();
-    }
-
-    if(auth.isAuthenticated()){
-        setAuthenticationDetails();
-    }
-
-    var self = this;
-    return {
-        userDataResolved: function () {
-            return auth.userDataResolved.promise;
-        },
-        getUsername: function () { return auth.getUsername(); },
-        isAuthenticated: auth.isAuthenticated,
-        login: function (username, password) {
-            var authString = btoa(username + ':' + password);
-            return $http({
-                    method: 'POST',
-                    url: ShassaroApp.api_host_url + '/login/',
-                    headers: {
-                        "Authorization": "Basic " + authString
-                    }
-                })
-                .success(function (token) {
-                    auth.setCookie(username, token);
-                    auth.setTokenHeader(token);
-                    auth.setAuthenticatedUserInfo(username);
-                    self.username = username;
-                });
-        },
-        logout : function () {
-            return $http({
-                    method: 'DELETE',
-                    url: ShassaroApp.api_host_url + '/logout/'
-                })
-                .success(function () {
-                    auth.logoutUser();
-                });
-        },
-        register: function (username, password, first_name, last_name, email) {
-            return $http(                {
-                    method: 'POST',
-                    url: ShassaroApp.api_host_url + '/register/',
-                    data: {
-                        username: username,
-                        password: password,
-                        first_name: first_name,
-                        last_name: last_name,
-                        email: email
-                    }
-                });
-        }
-    };
-});
+//ShassaroApp.factory('AuthenticationService_OLD', function ($http, $cookies, $q, Users) {
+//
+//    var isAuthenticated = false;
+//    var username = null;
+//
+//    function validateToken(token) {
+//        return $http({
+//            method: 'POST',
+//            url: ShassaroApp.api_host_url + '/validate_token/',
+//            data: {'token': token}
+//        });
+//    }
+//
+//    var auth = {
+//        userDataResolved: $q.defer(),
+//        isAuthenticated: function () {
+//            var deferred = $q.defer();
+//            var result = {
+//                true: deferred.promise.then,
+//                false: deferred.promise.catch
+//            };
+//
+//            var token = auth.getToken();
+//            if(token == null){
+//                deferred.reject();
+//            }
+//            else {
+//                validateToken(token)
+//                    .success(function (tokenIsValid) {
+//                        if (tokenIsValid) {
+//                            deferred.resolve();
+//                        }
+//                        else {
+//                            deferred.reject();
+//                        }
+//                    });
+//            }
+//            return result;
+//        },
+//        getToken: function () {
+//            var cookie = $cookies.get('auth_token');
+//            if(!cookie)
+//                return null;
+//
+//            return cookie.split(':')[1];
+//        },
+//        getUsername: function () {
+//            var cookie = $cookies.get('auth_token');
+//            if(!cookie)
+//                return null;
+//
+//            return cookie.split(':')[0];
+//        },
+//        setCookie: function (username, token) {
+//            return $cookies.put('auth_token', username + ':' + token);
+//        },
+//        logoutUser : function () {
+//            $cookies.remove('auth_token');
+//            delete $http.defaults.headers.common.Authorization;
+//            delete ShassaroApp.user;
+//        },
+//        setTokenHeader: function (token) {
+//            $http.defaults.headers.common.Authorization = 'Token ' + token;
+//        },
+//        setAuthenticatedUserInfo: function (username) {
+//            if(username == null)
+//                username = this.getUsername();
+//
+//            Users.get({username: username}).$promise.then(function (user) {ShassaroApp.user = user;});
+//            this.userDataResolved.resolve();
+//        }
+//    };
+//
+//    function setAuthenticationDetails(token){
+//        if(!angular.isDefined(token))
+//            var token = auth.getToken();
+//
+//        auth.setTokenHeader(token);
+//        auth.setAuthenticatedUserInfo();
+//    }
+//
+//    if(auth.isAuthenticated()){
+//        setAuthenticationDetails();
+//    }
+//
+//    var self = this;
+//    return {
+//        userDataResolved: function () {
+//            return auth.userDataResolved.promise;
+//        },
+//        getUsername: function () { return auth.getUsername(); },
+//        isAuthenticated: auth.isAuthenticated,
+//        login: function (username, password) {
+//            var authString = btoa(username + ':' + password);
+//            return $http({
+//                    method: 'POST',
+//                    url: ShassaroApp.api_host_url + '/login/',
+//                    headers: {
+//                        "Authorization": "Basic " + authString
+//                    }
+//                })
+//                .success(function (token) {
+//                    auth.setCookie(username, token);
+//                    auth.setTokenHeader(token);
+//                    auth.setAuthenticatedUserInfo(username);
+//                    self.username = username;
+//                });
+//        },
+//        logout : function () {
+//            return $http({
+//                    method: 'DELETE',
+//                    url: ShassaroApp.api_host_url + '/logout/'
+//                })
+//                .success(function () {
+//                    auth.logoutUser();
+//                });
+//        },
+//        register: function (username, password, first_name, last_name, email) {
+//            return $http(                {
+//                    method: 'POST',
+//                    url: ShassaroApp.api_host_url + '/register/',
+//                    data: {
+//                        username: username,
+//                        password: password,
+//                        first_name: first_name,
+//                        last_name: last_name,
+//                        email: email
+//                    }
+//                });
+//        }
+//    };
+//});

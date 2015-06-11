@@ -1,15 +1,22 @@
 'use strict';
 
-ShassaroApp.factory('GameRequestStatuses', function ($resource) {
-    return $resource(ShassaroApp.api_host_url + '/game_request_statuses/:status', {}, {});
+ShassaroApp.factory('GameRequestStatuses', function ($resource, SETTINGS) {
+    return $resource(SETTINGS.apiUrl + '/game_request_statuses/:status', {}, {});
 });
 
-ShassaroApp.controller('GameRequestController', function ($scope, $websocket, $location, $interval, $timeout, GameRequestStatuses, Quotes) {
+ShassaroApp.factory('GameRequestSocket', function ($websocket, SETTINGS, Session) {
+    var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '?subscribe-broadcast');
+    return {
+        onMessage: socket.onMessage
+    };
+});
+
+
+ShassaroApp.controller('GameRequestController', function ($scope, $location, $interval, $timeout, GameRequestSocket, GameRequestStatuses, Quotes) {
     $scope.username = $scope.currentUser.username;
     $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE'];
 
-    var socket = $websocket($scope.websocketUrl+$scope.username+'?subscribe-broadcast');
-    socket.onMessage(function (event) {
+    GameRequestSocket.onMessage(function (event) {
         var requestStatus = JSON.parse(event.data)[0].fields;
         GameRequestStatuses.get({status: requestStatus.status}).$promise.then(function (status) {
             requestStatus.status = status;
