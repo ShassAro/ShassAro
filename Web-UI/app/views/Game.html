@@ -87,7 +87,10 @@
             <timer  start-time="gameStartTime" end-time="gameEndTime" interval="250">
                 <div class="progress" style="margin-bottom: 3px;">
                     <div class="progress-bar progress-bar-striped active"
-                         ng-class="{'progress-bar-warning': (100-progressBar) >= 60 && (100-progressBar) < 85, 'progress-bar-alert': (100-progressBar) >= 85}"
+                         ng-class="{
+                            'progress-bar-info': (100-progressBar) < 60,
+                            'progress-bar-warning': (100-progressBar) >= 60 && (100-progressBar) < 85,
+                            'progress-bar-danger': (100-progressBar) >= 85}"
                          role="progressbar" aria-valuenow="{{progress()}}"
                          aria-valuemin="0" aria-valuemax="100"
                          style="width: {{100-progressBar}}%;">

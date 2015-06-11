@@ -1,25 +1,23 @@
 'use strict';
 
-ShassaroApp.controller('GameController', function ($scope, $websocket, $interval, user, ActiveGames, Users) {
-    //var socket = $websocket(ShassaroApp.api_host_url.replace('http://','ws://')+'/ws/'+user.username+'-game?subscribe-broadcast');
-    //socket.onMessage(function (event) {
-    //    if(angular.isObject(event.data)){
-    //        // handle active game object
-    //        var activeGame = event.data;
-    //        $scope.opponentGoalsCompleted = activeGame.remote_goals_count;
-    //    }
-    //    else{
-    //        // handle a redirect
-    //        var gameResultUrl = event.data;
-    //    }
-    //    var gameInfo = JSON.parse(event.data);
-    //    console.log(gameInfo);
-    //});
+ShassaroApp.controller('GameController', function ($scope, $websocket, $interval, $location, ActiveGames, Users) {
+    var socket = $websocket($scope.websocketUrl+$scope.currentUser.username+'-game?subscribe-broadcast');
+    socket.onMessage(function (event) {
+        var data = JSON.parse(event.data);
+        if(angular.isDefined(data.id)){
+            // game is over
+            $location.path('/gameResult');
+        }
+        else{
+            // handle active game object
+            $scope.opponentGoalsCompleted = data.remote_goals_count;
+        }
+    });
 
     App.sidebar('close-sidebar');
 
     $scope.isConnected = false;
-    $scope.username = user.username;
+    $scope.username = $scope.currentUser.username;
     $scope.gameCompleted = false;
 
     $scope.getOpponentGoalsCount = function () {
@@ -63,4 +61,14 @@ ShassaroApp.controller('GameController', function ($scope, $websocket, $interval
                 $scope.gameCompleted = response.all_completed;
             });
     };
+
+    //$scope.$on('timer-stopped', function (event, data){
+    //    $scope.$apply(function () {
+    //        $location.path('/gameResult');
+    //    });
+    //});
+
+    $scope.$on('$destroy', function() {
+        App.sidebar('open-sidebar');
+    });
 });

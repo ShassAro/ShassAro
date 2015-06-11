@@ -8,15 +8,15 @@
     <img src="img/stadium.jpg" alt="header image" class="animation-pulseSlow">
 </div>
 
-<div class="block">
-    <div id="win" style="display: inherit">
+<div class="block" ng-switch="userWon">
+    <div id="win" ng-switch-when="true">
         <h1 align="center">You won!</h1>
         <div align="center">
             <img class="result-img" src="img/cup.png">
         </div>
         <h3 align="center">Your mama must be fucking proud</h3>
     </div>
-    <div id="lost" style="display: none">
+    <div id="lost" ng-switch-default>
         <h1 align="center">You lost!</h1>
         <div align="center">
             <img class="result-img" src="img/ashamed.png">
@@ -26,10 +26,10 @@
     <br>
     <div class="row result-fontsize">
         <div align="center">
-            The game took <strong>42</strong> minutes <br>
-            Your opponent has completed <strong>1</strong> goal(s) <br>
-            You have gained <strong>100</strong> experience points! <br>
-            This challenge included these tags: <strong>bash</strong>, <strong>tahat</strong>, <strong>tusik</strong><br>
+            The game took <strong>{{gameResult.actual_duration_minutes}}</strong> minutes <br>
+            You have gained <strong>{{gameResult.experience_gained}}</strong> experience points! <br>
+            This challenge included these tags: <strong ng-repeat="tag in gameTags">{{tag}}</strong>
+            <!--<strong>bash</strong>, <strong>tahat</strong>, <strong>tusik</strong><br>-->
             <br>
         </div>
     </div>

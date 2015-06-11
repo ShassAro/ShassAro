@@ -4,11 +4,11 @@ ShassaroApp.factory('GameRequestStatuses', function ($resource) {
     return $resource(ShassaroApp.api_host_url + '/game_request_statuses/:status', {}, {});
 });
 
-ShassaroApp.controller('GameRequestController', function ($scope, $websocket, $location, $interval, $timeout, user, GameRequestStatuses, Quotes) {
-    $scope.username = ShassaroApp.user.username;
+ShassaroApp.controller('GameRequestController', function ($scope, $websocket, $location, $interval, $timeout, GameRequestStatuses, Quotes) {
+    $scope.username = $scope.currentUser.username;
     $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE'];
 
-    var socket = $websocket(ShassaroApp.api_host_url.replace('http://','ws://')+'/ws/'+$scope.username+'?subscribe-broadcast');
+    var socket = $websocket($scope.websocketUrl+$scope.username+'?subscribe-broadcast');
     socket.onMessage(function (event) {
         var requestStatus = JSON.parse(event.data)[0].fields;
         GameRequestStatuses.get({status: requestStatus.status}).$promise.then(function (status) {

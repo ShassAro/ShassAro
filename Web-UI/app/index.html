@@ -57,7 +57,7 @@
         <!-- Modernizr (browser feature detection library) & Respond.js (Enable responsive CSS code on browsers that don't support it, eg IE8) -->
         <script src="js/vendor/modernizr-2.7.1-respond-1.4.2.min.js"></script>
     </head>
-    <body ng-app="ShassaroApp" class="page-loading">
+    <body ng-app="ShassaroApp" class="page-loading" ng-controller="ApplicationController">
         <!-- Preloader -->
         <!-- Preloader functionality (initialized in js/app.js) - pageLoading() -->
         <!-- Used only if page preloader is enabled from inc/config (PHP version) or the class 'page-loading' is added in body element (HTML version) -->
@@ -88,12 +88,12 @@
 
                         <!-- User Info -->
                         <div class="sidebar-section clearfix" ng-controller="AuthenticationController">
-                            <div ng-switch="isAuthenticated">
+                            <div ng-switch="currentUser!=null">
                                 <div class="sidebar-user" ng-switch-when="true">
                                     <div class="sidebar-user-avatar">
-                                        <img gravatar-src-once="user.email">
+                                        <img gravatar-src-once="currentUser.email">
                                     </div>
-                                    <h4>{{user.first_name}} {{user.last_name}}</h4>
+                                    <h4>{{currentUser.first_name}} {{currentUser.last_name}}</h4>
                                     <br/>
                                     <button class="btn btn-xs btn-warning" ng-click="logout()"><span class="gi gi-log_out"></span> Logout</button>
                                 </div>
@@ -115,7 +115,7 @@
                             <li>
                                 <a href="#/" class=" active"><i class="gi gi-home sidebar-nav-icon"></i>Home</a>
                             </li>
-                            <li ng-if="isUserAuthenticated()">
+                            <li ng-if="currentUser">
                                 <a href="#/dashboard" class=" active"><i class="gi gi-stopwatch sidebar-nav-icon"></i>Dashboard</a>
                             </li>
                             <li class="sidebar-header">
@@ -126,8 +126,11 @@
                                         class="gi gi-lightbulb"></i></a></span>
                                 <span class="sidebar-header-title">Get Started</span>
                             </li>
-                            <li ng-if="isUserAuthenticated()">
+                            <li ng-if="currentUser">
                                 <a href="#/challenge" ><i class="gi gi-star sidebar-nav-icon"></i>Challenge</a>
+                            </li>
+                            <li ng-if="currentUser">
+                                <a href="#/gameRequest" ><i class="gi gi-star sidebar-nav-icon"></i>GameRequest</a>
                             </li>
                             <li>
                                 <a href="#/aboutShassaro"><i class="gi gi-book sidebar-nav-icon"></i>About ShassAro</a>
@@ -204,71 +207,7 @@
         <!-- Scroll to top link, initialized in js/app.js - scrollToTop() -->
         <a href="#" id="to-top"><i class="fa fa-angle-double-up"></i></a>
 
-        <!-- User Settings, modal which opens from Settings link (found in top right user menu) and the Cog link (found in sidebar user info) -->
-        <div id="modal-user-settings" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header text-center">
-                        <h2 class="modal-title"><i class="fa fa-pencil"></i> Settings</h2>
-                    </div>
-                    <!-- END Modal Header -->
-
-                    <!-- Modal Body -->
-                    <div class="modal-body">
-                        <form action="index.html" method="post" enctype="multipart/form-data" class="form-horizontal form-bordered" onsubmit="return false;">
-                            <fieldset>
-                                <legend>Vital Info</legend>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label">Username</label>
-                                    <div class="col-md-8">
-                                        <p class="form-control-static">Admin</p>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="user-settings-email">Email</label>
-                                    <div class="col-md-8">
-                                        <input type="email" id="user-settings-email" name="user-settings-email" class="form-control" value="admin@example.com">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="user-settings-notifications">Email Notifications</label>
-                                    <div class="col-md-8">
-                                        <label class="switch switch-primary">
-                                            <input type="checkbox" id="user-settings-notifications" name="user-settings-notifications" value="1" checked>
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </fieldset>
-                            <fieldset>
-                                <legend>Password Update</legend>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="user-settings-password">New Password</label>
-                                    <div class="col-md-8">
-                                        <input type="password" id="user-settings-password" name="user-settings-password" class="form-control" placeholder="Please choose a complex one..">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="user-settings-repassword">Confirm New Password</label>
-                                    <div class="col-md-8">
-                                        <input type="password" id="user-settings-repassword" name="user-settings-repassword" class="form-control" placeholder="..and confirm it!">
-                                    </div>
-                                </div>
-                            </fieldset>
-                            <div class="form-group form-actions">
-                                <div class="col-xs-12 text-right">
-                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-sm btn-primary">Save Changes</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- END Modal Body -->
-                </div>
-            </div>
-        </div>
-        <!-- END User Settings -->
+        <!--<div login-dialog ng-if="false"></div>-->
 
         <!-- Include Jquery library from Google's CDN but if something goes wrong get Jquery from local file (Remove 'http:' if you have SSL) -->
         <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -304,11 +243,15 @@
         <script src="services/ActiveGames.js"></script>
         <script src="services/AuthenticationService.js"></script>
         <script src="services/Quotes.js"></script>
+        <script src="services/GameResults.js"></script>
+        <script src="services/Settings.js"></script>
 
+        <script src="controllers/ApplicationController.js"></script>
         <script src="controllers/NavbarController.js"></script>
         <script src="controllers/ChallengeController.js"></script>
         <script src="controllers/GameRequestController.js"></script>
         <script src="controllers/GameController.js"></script>
+        <script src="controllers/GameResultController.js"></script>
         <script src="controllers/AuthenticationController.js"></script>
 
         <script type="application/javascript">
