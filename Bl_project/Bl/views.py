@@ -103,7 +103,7 @@ class GameRequestViewSet(ModelViewSet):
             if len(user_object) == 0:
                 return Response(data="Username does not exist.", status=status.HTTP_400_BAD_REQUEST)
 
-            tags = request.DATA.getlist("tags")
+            tags = dict(request.DATA).get("tags")
 
             logger.debug("Got a game request for user {0}".format(username))
 
@@ -549,7 +549,7 @@ class AuthView(APIView):
 
         returnJson = {
             "token" : token.key,
-            "user" : UserSerializer(request.user).data
+            "user" : UserSerializer(request.user).data78
         }
 
         return Response(returnJson, status=status.HTTP_200_OK)
