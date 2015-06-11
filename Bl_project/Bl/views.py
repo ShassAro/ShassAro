@@ -549,7 +549,7 @@ class AuthView(APIView):
 
         returnJson = {
             "token" : token.key,
-            "username" : request.user.username
+            "user" : UserSerializer(request.user).data
         }
 
         return Response(returnJson, status=status.HTTP_200_OK)
