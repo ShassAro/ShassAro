@@ -103,7 +103,7 @@ class GameRequestViewSet(ModelViewSet):
             if len(user_object) == 0:
                 return Response(data="Username does not exist.", status=status.HTTP_400_BAD_REQUEST)
 
-            tags = request.DATA.getlist("tags")
+            tags = dict(request.DATA).get("tags")
 
             logger.debug("Got a game request for user {0}".format(username))
 
