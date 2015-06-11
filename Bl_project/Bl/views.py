@@ -382,10 +382,15 @@ class ActiveGameGoalCheckViewSet(APIView):
 
                     other_username = None
 
+                    # And cross it back to original
+                    user_index = abs(user_index-1)
+
                     if(user_index == 0):
                         other_username = gameObj[0].userB
                     else:
                         other_username = gameObj[0].userA
+
+
 
                     end_game(gameObj[0], username, other_username)
                     finished = True
@@ -541,7 +546,12 @@ class AuthView(APIView):
         else:
             token = Token.objects.filter(user=request.user).first()
 
-        return Response(token.key, status=status.HTTP_200_OK)
+        returnJson = {
+            "token" : token.key,
+            "username" : request.user
+        }
+
+        return Response(returnJson, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
 
