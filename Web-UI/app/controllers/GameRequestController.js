@@ -5,10 +5,7 @@ ShassaroApp.factory('GameRequestStatuses', function ($resource, SETTINGS) {
 });
 
 ShassaroApp.factory('GameRequestSocket', function ($websocket, SETTINGS, Session) {
-    var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '?subscribe-broadcast');
-    return {
-        onMessage: socket.onMessage
-    };
+    return $websocket(SETTINGS.wsUrl + Session.user.username + '?subscribe-broadcast');
 });
 
 

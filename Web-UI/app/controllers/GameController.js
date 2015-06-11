@@ -1,10 +1,7 @@
 'use strict';
 
 ShassaroApp.factory('GameSocket', function ($websocket, SETTINGS, $rootScope) {
-    var socket = $websocket(SETTINGS.wsUrl + $rootScope.currentUser.username + '-game?subscribe-broadcast');
-    return {
-        onMessage: socket.onMessage
-    };
+    return $websocket(SETTINGS.wsUrl + $rootScope.currentUser.username + '-game?subscribe-broadcast');
 });
 
 ShassaroApp.controller('GameController', function ($scope, $interval, $location, GameSocket, ActiveGames, Users) {
