@@ -107,6 +107,11 @@ class GameRequestViewSet(ModelViewSet):
 
             logger.debug("Got a game request for user {0}".format(username))
 
+            # Check if the user already have a gamerequest
+            if (len(GameRequest.objects.filter(username=username)) != 0):
+                return Response(data="User already have a game request!",status=status.HTTP_409_CONFLICT)
+
+
         except Exception as e:
             return Response(data=e.__dict__, status=status.HTTP_400_BAD_REQUEST)
 
@@ -427,7 +432,6 @@ class ForfeitViewSet(APIView):
 
     permission_classes = (permissions.IsAuthenticated,)
 
-    @staticmethod
     def post(self, request, *args, **kwargs):
 
         try:
@@ -509,9 +513,6 @@ class QuotesViewSet(APIView):
 
 
 class QuietBasicAuthentication(BasicAuthentication):
-    # disclaimer: once the user is logged in, this should NOT be used as a
-    # substitute for SessionAuthentication, which uses the django session cookie,
-    # rather it can check credentials before a session cookie has been granted.
     def authenticate_header(self, request):
         return 'xBasic realm="%s"' % self.www_authenticate_realm
 

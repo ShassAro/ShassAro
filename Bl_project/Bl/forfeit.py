@@ -36,7 +36,7 @@ def forfeit(username):
 
     # End the game
     try:
-        end_game(game_obj[0], username, other_username)
+        end_game(game_obj[0], other_username, username)
         return Response(data="game ended", status=status.HTTP_200_OK)
     except Exception as e:
         return Response(data=str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

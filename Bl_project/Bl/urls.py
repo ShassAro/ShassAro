@@ -36,4 +36,5 @@ urlpatterns = patterns('',
     url(r'login/$', views.AuthView.as_view()),
     url(r'logout/$', views.LogoutView.as_view()),
     url(r'validate_token/$', views.ValidateToken.as_view()),
+    url(r'forfeit/$', views.ForfeitViewSet.as_view()),
 )
