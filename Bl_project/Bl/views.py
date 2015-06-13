@@ -172,39 +172,7 @@ class GameRequestViewSet(ModelViewSet):
 
             logger.debug("Start with create game routine.")
 
-            try:
-                created_game = CreateGame.create([username, match.username], picked_images)
-            except Exception as e:
-
-                game_obj = created_game
-
-                # Create the kill command json
-                kill_json =  {
-                    "dockerServerIp": game_obj.shassaros.first().docker_server_ip,
-                    "dockerId": [
-                        game_obj.shassaros.all()[0].docker_id,
-                        game_obj.shassaros.all()[1].docker_id
-                    ]
-                }
-
-                # Get the docker manager
-                managers = DockerManager.objects.all()
-                if len(managers) == 0:
-                    raise DockerManagerNotAvailableError()
-                docker_manager = managers[0]
-
-                # Is there a postfix?
-                docker_manager_url = "http://{0}:{1}/".format(docker_manager.ip, docker_manager.port)
-                if docker_manager.url != "/":
-                    docker_manager_url += "/{0}/".format(docker_manager.url)
-
-                # Append the command name
-                docker_manager_url += "kill"
-
-                # Send the kill!
-                response = requests.post(docker_manager_url, json=kill_json)
-
-                raise DeployError(e.message)
+            created_game = CreateGame.create([username, match.username], picked_images)
 
             logger.debug("Done with create game! notify as done.")
             game_request.status = self.get_a_game_request_status(GameRequestStatuses.DONE)
