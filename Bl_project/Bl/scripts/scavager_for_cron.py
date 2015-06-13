@@ -4,12 +4,12 @@ from datetime import datetime
 
 SERVER_URL = 'http://www.shassaro.com/api/bl'
 USERNAME = 'shassaro'
-PASSWORD = 'Sh%40ssAro'
+PASSWORD = 'Sh@ssAro'
 
 def main():
     try:
         password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        password_mgr.add_password(None, SERVER_URL, USERNAME, PASSWORD)
+        password_mgr.add_password(None, SERVER_URL, USERNAME, PASSWORD.encode('utf-8'))
         handler = urllib2.HTTPBasicAuthHandler(password_mgr)
         opener = urllib2.build_opener(handler)
 
@@ -18,7 +18,7 @@ def main():
             request = urllib2.Request(SERVER_URL + '/scavage/', '')
             response = urllib2.urlopen(request)
         except urllib2.HTTPError as e:
-            print str(datetime.now()) + ' - Server could not complete request. Err: ' + str(e.code)
+            print str(datetime.now()) + ' - Server could not complete request. Err: ' + str(e.code) + str(e.message)
         except urllib2.URLError as e:
             print str(datetime.now()) + ' - Failed to reach the server. Err: ' + str(e.reason)
         else:
@@ -30,7 +30,7 @@ def main():
 
             print str_to_write
     except Exception as e:
-        print str(datetime.now()) + ' - Exception occurred: ' + str(e)
+        print str(datetime.now()) + ' - Exception occurred: ' + str(e) + str(e.message)
 
 if __name__ == '__main__':
     main()
