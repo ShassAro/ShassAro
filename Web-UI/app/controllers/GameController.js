@@ -1,19 +1,45 @@
 'use strict';
 
-ShassaroApp.factory('GameSocket', function ($websocket, SETTINGS, Session) {
+ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Session) {
     return {
         getSocket: function () {
             console.log('Getting a Game socket');
             var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '-game?subscribe-broadcast&echo');
+            var heartbeatMessage = '--heartbeat--', heartbeatInterval = null, missedHeartbeats = 0;
 
             socket.onOpen(function () {
                 console.debug('gamesocket on-open');
                 console.debug(arguments);
+                missedHeartbeats = 0;
+                heartbeatInterval = $interval(function () {
+                    try
+                    {
+                        missedHeartbeats++;
+                        console.debug(missedHeartbeats);
+                        if(missedHeartbeats >= 10)
+                            throw new Error("Too many missed heartbeats");
+                        socket.send(heartbeatMessage);
+                    }
+                    catch(e){
+                        console.error(e);
+                        $interval.cancel(heartbeatInterval);
+                        heartbeatInterval = null;
+                        socket.close();
+                    }
+                },5000)
+            });
+
+            socket.onMessage(function (event) {
+                if(event.data === heartbeatMessage) {
+                    missedHeartbeats = 0;
+                    console.debug('zeroing missed heartbeats');
+                }
             });
 
             socket.onClose(function () {
                 console.debug('gamesocket on-close');
                 console.debug(arguments);
+                $interval.cancel(heartbeatInterval);
             });
 
             socket.onError(function () {
