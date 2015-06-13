@@ -37,6 +37,7 @@ ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Ses
                 if(event.data === heartbeatMessage) {
                     missedHeartbeats = 0;
                     console.debug('zeroing missed heartbeats');
+                    socket.send(heartbeatMessage);
                 }
             });
 
