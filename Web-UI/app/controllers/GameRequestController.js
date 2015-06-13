@@ -29,6 +29,7 @@ ShassaroApp.factory('GameRequestSocket', function ($websocket, $interval, SETTIN
                         $interval.cancel(heartbeatInterval);
                         heartbeatInterval = null;
                         socket.close();
+
                     }
                 },2000)
             });
