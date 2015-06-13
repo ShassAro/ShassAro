@@ -4,7 +4,7 @@ from datetime import datetime
 
 SERVER_URL = 'http://localhost:1234/'
 USERNAME = 'shassaro'
-PASSWORD = '1'
+PASSWORD = 'Sh@ssAro'
 
 def main():
     try:
