@@ -41,7 +41,7 @@ def GenerateActiveGame(username):
         "goals" : gameObj[0].images.all()[image_index].goal_description,
         "hints" : gameObj[0].images.all()[image_index].hints,
         "duration" : gameObj[0].images.all()[image_index].duration_minutes,
-        "start_time" :str(gameObj[0].start_time),
+        "start_time" :str(gameObj[0].start_time.isoformat()),
         "remote_ip" : gameObj[0].shassaros.all()[abs(user_index-1)].shassaro_ip,
         "docker_manager_ip": DockerManager.objects.first().ip,
         "remote_username" : gameObj[0].shassaros.all()[abs(user_index-1)].participants.all()[0].name,
