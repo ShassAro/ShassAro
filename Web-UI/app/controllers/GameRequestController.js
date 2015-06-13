@@ -4,30 +4,65 @@ ShassaroApp.factory('GameRequestStatuses', function ($resource, SETTINGS) {
     return $resource(SETTINGS.apiUrl + '/game_request_statuses/:status', {}, {});
 });
 
-ShassaroApp.factory('GameRequestSocket', function ($websocket, $timeout, SETTINGS, Session) {
-    var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '?subscribe-broadcast&echo');
+ShassaroApp.factory('GameRequestSocket', function ($websocket, $interval, SETTINGS, Session) {
+    return {
+        getSocket: function () {
+            console.log('Getting a GameRequest socket');
+            var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '?subscribe-broadcast&echo');
+            var heartbeatMessage = '--heartbeat--', heartbeatInterval = null, missedHeartbeats = 0;
 
-    socket.onOpen(function () {
-        console.debug('gamerequestsocket on-open ' + arguments);
-    });
+            socket.onOpen(function () {
+                console.debug('gamerequestsocket on-open');
+                console.debug(arguments);
+                missedHeartbeats = 0;
+                heartbeatInterval = $interval(function () {
+                    try
+                    {
+                        missedHeartbeats++;
+                        console.debug(missedHeartbeats);
+                        if(missedHeartbeats >= 10)
+                            throw new Error("Too many missed heartbeats");
+                        socket.send(heartbeatMessage);
+                    }
+                    catch(e){
+                        console.error(e);
+                        $interval.cancel(heartbeatInterval);
+                        heartbeatInterval = null;
+                        socket.close();
+                    }
+                },2000)
+            });
 
-    socket.onClose(function () {
-        console.debug('gamerequestsocket on-close ' + arguments);
-    });
+            socket.onMessage(function (event) {
+                if(event.data === heartbeatMessage) {
+                    missedHeartbeats = 0;
+                    console.debug('zeroing missed heartbeats');
+                    socket.send(heartbeatMessage);
+                }
+            });
 
-    socket.onError(function () {
-        console.debug('gamerequestsocket on-error ' + arguments);
-    });
+            socket.onClose(function () {
+                console.debug('gamerequestsocket on-close');
+                console.debug(arguments);
+                $interval.cancel(heartbeatInterval);
+            });
 
-    return socket;
+            socket.onError(function () {
+                console.debug('gamerequestsocket on-error ');
+                console.debug(arguments);
+            });
+
+            return socket;
+        }
+    }
 });
 
 
 ShassaroApp.controller('GameRequestController', function ($scope, $location, $interval, $timeout, GameRequestSocket, GameRequestStatuses, Quotes) {
     $scope.username = $scope.currentUser.username;
     $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE', 'ERROR'];
-
-    GameRequestSocket.onMessage(function (event) {
+    $scope.socket = GameRequestSocket.getSocket();
+    $scope.socket.onMessage(function (event) {
         var requestStatus = JSON.parse(event.data)[0].fields;
         GameRequestStatuses.get({status: requestStatus.status}).$promise.then(function (status) {
             requestStatus.status = status;
@@ -89,6 +124,7 @@ ShassaroApp.controller('GameRequestController', function ($scope, $location, $in
     $scope.getQuote();
     $scope.quotesInterval = $interval($scope.getQuote, 10*1000);
     $scope.$on('$destroy', function() {
+        $scope.socket.close();
         $interval.cancel($scope.quotesInterval);
         delete $scope.quotesInterval;
     });
