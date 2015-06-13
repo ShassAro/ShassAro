@@ -29,7 +29,7 @@ def generate_password():
     # Switch 1/2 of the hex chars into special symbols
     for x in xrange(2):
         symbol_pos = random.randint(0, 7)
-        which_symbol = random.choice('!@#')
+        which_symbol = random.choice('@')
         hash_list[symbol_pos] = which_symbol
 
     return "".join(hash_list)
