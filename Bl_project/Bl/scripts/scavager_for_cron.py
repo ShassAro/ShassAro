@@ -15,7 +15,7 @@ def main():
 
         urllib2.install_opener(opener)
         try:
-            request = urllib2.Request('http://localhost:1234/scavage/', '')
+            request = urllib2.Request(SERVER_URL + '/scavage/', '')
             response = urllib2.urlopen(request)
         except urllib2.HTTPError as e:
             print str(datetime.now()) + ' - Server could not complete request. Err: ' + str(e.code)
