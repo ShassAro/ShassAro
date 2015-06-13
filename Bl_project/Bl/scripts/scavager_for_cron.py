@@ -2,7 +2,7 @@ import urllib2
 import json
 from datetime import datetime
 
-SERVER_URL = 'http://localhost/api/bl'
+SERVER_URL = 'http://www.shassaro.com/api/bl'
 USERNAME = 'shassaro'
 PASSWORD = 'Sh@ssAro'
 
