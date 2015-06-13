@@ -14,32 +14,32 @@ ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Ses
             socket.onOpen(function () {
                 console.debug('gamesocket on-open');
                 console.debug(arguments);
-                missedHeartbeats = 0;
-                heartbeatInterval = $interval(function () {
-                    try
-                    {
-                        missedHeartbeats++;
-                        console.debug(missedHeartbeats);
-                        if(missedHeartbeats >= 10)
-                            throw new Error("Too many missed heartbeats");
-                        socket.send(heartbeatMessage);
-                    }
-                    catch(e){
-                        console.error(e);
-                        $interval.cancel(heartbeatInterval);
-                        heartbeatInterval = null;
-                        socket.close();
-                    }
-                },2000)
+                //missedHeartbeats = 0;
+                //heartbeatInterval = $interval(function () {
+                //    try
+                //    {
+                //        missedHeartbeats++;
+                //        console.debug(missedHeartbeats);
+                //        if(missedHeartbeats >= 10)
+                //            throw new Error("Too many missed heartbeats");
+                //        socket.send(heartbeatMessage);
+                //    }
+                //    catch(e){
+                //        console.error(e);
+                //        $interval.cancel(heartbeatInterval);
+                //        heartbeatInterval = null;
+                //        socket.close();
+                //    }
+                //},2000);
             });
 
-            socket.onMessage(function (event) {
-                if(event.data === heartbeatMessage) {
-                    missedHeartbeats = 0;
-                    console.debug('zeroing missed heartbeats');
-                    socket.send(heartbeatMessage);
-                }
-            });
+            //socket.onMessage(function (event) {
+            //    if(event.data === heartbeatMessage) {
+            //        missedHeartbeats = 0;
+            //        console.debug('zeroing missed heartbeats');
+            //        socket.send(heartbeatMessage);
+            //    }
+            //});
 
             socket.onClose(function () {
                 console.debug('gamesocket on-close');
