@@ -77,6 +77,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'ws4redis.context_processors.default',
 )
 
+WS4REDIS_HEARTBEAT = '--heartbeat--'
+
 CSRF_COOKIE_SECURE = True
 
 # Database
