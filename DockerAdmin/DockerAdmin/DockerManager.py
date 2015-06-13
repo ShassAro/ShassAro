@@ -15,6 +15,7 @@ import socket
 from urlparse import urlparse
 import os
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -198,6 +199,9 @@ class DockerDeploy():
         # Create two threads that runs puppet
         t1 = Thread(target=self.executeDocker1)
         t2 = Thread(target=self.executeDocker2)
+
+        logger.debug("Sleep for 3 seconds to let the dockers get fully up")
+        time.sleep(3)
 
         logger.debug("Starting puppet configuration threads.")
 
