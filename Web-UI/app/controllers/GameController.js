@@ -1,25 +1,34 @@
 'use strict';
 
 ShassaroApp.factory('GameSocket', function ($websocket, SETTINGS, Session) {
-    var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '-game?subscribe-broadcast&echo');
+    return {
+        getSocket: function () {
+            console.log('Getting a Game socket');
+            var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '-game?subscribe-broadcast&echo');
 
-    socket.onOpen(function () {
-        console.debug('gamesocket on-open ' + arguments);
-    });
+            socket.onOpen(function () {
+                console.debug('gamesocket on-open');
+                console.debug(arguments);
+            });
 
-    socket.onClose(function () {
-        console.debug('gamesocket on-close ' + arguments);
-    });
+            socket.onClose(function () {
+                console.debug('gamesocket on-close');
+                console.debug(arguments);
+            });
 
-    socket.onError(function () {
-        console.debug('gamesocket on-error ' + arguments);
-    });
+            socket.onError(function () {
+                console.debug('gamesocket on-error');
+                console.debug(arguments);
+            });
 
-    return socket;
+            return socket;
+        }
+    }
 });
 
 ShassaroApp.controller('GameController', function ($scope, $interval, $location, GameSocket, ActiveGames, Users) {
-    GameSocket.onMessage(function (event) {
+    $scope.socket = GameSocket.getSocket();
+    $scope.socket.onMessage(function (event) {
         var data = JSON.parse(event.data);
         if(angular.isDefined(data.id)){
             // game is over
