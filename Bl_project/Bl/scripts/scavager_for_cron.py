@@ -4,7 +4,7 @@ from datetime import datetime
 
 SERVER_URL = 'http://www.shassaro.com/api/bl'
 USERNAME = 'shassaro'
-PASSWORD = 'Sh@ssAro'
+PASSWORD = 'Sh%40ssAro'
 
 def main():
     try:
