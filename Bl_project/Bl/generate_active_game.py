@@ -20,8 +20,12 @@ def GenerateActiveGame(username):
         # Find all game result that the user is a member of
         allGames = GameResult.objects.filter(Q(losing_users__username=username) | Q(winning_users__username=username))
 
+        returnJson = {
+            "id" : allGames.order_by("-start_time")[0].pk
+        }
+
         # Redirect to gameresult to the last game of all
-        return "/game_results/{0}".format(allGames.order_by("-start_time")[0].pk)
+        return returnJson
 
     # Assume two user have different images
     image_index = user_index
