@@ -43,6 +43,7 @@ var ShassaroApp = angular
             }).
             when('/dashboard', {
                 templateUrl: 'views/DashboardView.html',
+                controller: 'DashboardController',
                 resolve: routeResolveUser
             }).
             when('/', {

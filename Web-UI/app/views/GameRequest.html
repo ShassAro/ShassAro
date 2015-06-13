@@ -36,21 +36,13 @@
         <div ng-repeat="stepInfo in stepsInfo">
             <div class="col-md-10 col-md-push-1 text-primary">
                 <h3 ng-class="{'text-warning':stepInfo.status == statusNames[0],'text-info':stepInfo.status == statusNames[1],'text-success':stepInfo.status == statusNames[2]}">
-                    <span ng-if="isCurrentStep(stepInfo)" class="glyphicon glyphicon-unchecked"></span>
-                    <span ng-if="!isCurrentStep(stepInfo)" class="glyphicon glyphicon-checked"></span>
+                    <span ng-switch="isCurrentStep(stepInfo)">
+                        <span ng-switch-when="true" class="glyphicon glyphicon-unchecked"></span>
+                        <span ng-switch-default="" class="glyphicon glyphicon-check"></span>
+                    </span>
                     {{stepInfo.message}}
                 </h3>
             </div>
         </div>
-        <!--<div ng-repeat="stepName in statusNames" class="row" ng-if="$index < currentStep">-->
-            <!--<div class="col-md-10 col-md-push-1 text-primary">-->
-                <!--<h3 ng-class="{'text-warning':stepsInfo[$index].status == statusNames[0],'text-info':stepsInfo[$index].status == statusNames[1],'text-success':stepsInfo[$index].status == statusNames[2]}">-->
-
-                    <!--<span ng-if="stepsInfo[$index].step == currentStep" class="glyphicon glyphicon-unchecked"></span>-->
-                    <!--<span ng-if="stepsInfo[$index].step < currentStep" class="glyphicon glyphicon-check"></span>-->
-
-                    <!--{{stepsInfo[$index].message}}</h3>-->
-            <!--</div>-->
-        <!--</div>-->
     </div>
 </div>

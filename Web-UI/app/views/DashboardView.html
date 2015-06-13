@@ -2,36 +2,38 @@
     <div class="header-section">
         <div class="row">
             <div class="col-md-4 col-lg-4 hidden-xs hidden-sm">
-                <h1>Welcome <strong>MegaUser</strong><br><small>Do you feel like having a challenge today?</small></h1>
+                <h1>Welcome <strong>{{user.first_name}} {{user.last_name}}</strong><br>
+                    <small>Do you feel like having a challenge today?</small>
+                </h1>
             </div>
             <div class="col-md-2 col-lg-2">
                 <a href="page_ready_user_profile.php" class="widget-image-container animation-hatch">
-                    <img src="http://gravatar.com/avatar/26ee46d586ed398204905ef5dab1f3a1" alt="avatar" class="widget-image img-circle">
+                    <img gravatar-src-once="user.email" alt="avatar" class="widget-image img-circle">
                 </a>
             </div>
             <div class="col-md-6 col-lg-6">
                 <div class="row text-center">
                     <div class="col-xs-4 col-sm-3">
                         <h2 class="animation-hatch">
-                            <strong>3</strong><br>
+                            <strong>{{stats.games_today}}</strong><br>
                             <small><i class="fa fa-star"></i> Games Today</small>
                         </h2>
                     </div>
                     <div class="col-xs-4 col-sm-3">
                         <h2 class="animation-hatch">
-                            <strong>1</strong><br>
+                            <strong>{{stats.win_today}}</strong><br>
                             <small><i class="fa fa-thumbs-o-up"></i> Wins Today</small>
                         </h2>
                     </div>
                     <div class="col-xs-4 col-sm-3">
                         <h2 class="animation-hatch">
-                            <strong>42</strong><br>
+                            <strong>{{stats.total_games}}</strong><br>
                             <small><i class="fa fa-gamepad"></i> Games Total</small>
                         </h2>
                     </div>
                     <div class="col-sm-3 hidden-xs">
                         <h2 class="animation-hatch">
-                            <strong>83</strong>%<br>
+                            <strong>{{100 * stats.total_wins / stats.total_games}}</strong>%<br>
                             <small><i class="fa fa-tachometer"></i> Wins Total</small>
                         </h2>
                     </div>
@@ -42,16 +44,33 @@
     <img src="img/keyboard.jpg" alt="header image" class="animation-pulseSlow">
 </div>
 
-<div class="col-sm-6 col-lg-3">
-    <a href="#/challenge" class="widget widget-hover-effect1">
-        <div class="widget-simple">
-            <img src="img/challenge.jpg" alt="avatar" class="widget-image img-circle pull-left">
-            <h4 class="widget-content">
-                <strong>Want a challage?</strong>
-                <small>May the force be with you</small>
-            </h4>
+<div class="col-lg-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <a href="#/challenge" class="widget widget-hover-effect1">
+                    <div class="widget-simple">
+                        <img src="img/challenge.jpg" alt="avatar" class="widget-image img-circle pull-left">
+                        <h4 class="widget-content">
+                            <strong>Want a challage?</strong>
+                            <small>May the force be with you</small>
+                        </h4>
+                    </div>
+                </a>
+            </div>
         </div>
-    </a>
+        <div class="row">
+            <a class="widget widget-hover-effect1">
+                <div class="widget-simple">
+                    <img src="img/chemistry-155121_640.png" alt="avatar" class="widget-image img-circle pull-left">
+                    <h4 class="widget-content">
+                        <strong>Experience: </strong> {{ totalExperience }}
+                        <small>You are so experienced!</small>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
 
 <div class="col-lg-9">
@@ -72,21 +91,17 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td class="text-center"><img src="http://gravatar.com/avatar/26ee46d586ed398204905ef5dab1f3a1" alt="avatar" class="img-circle">
-                                         <strong>VS</strong></b><img src="http://gravatar.com/avatar/26ee46d586ed398204905ef5dab1f3a1" alt="avatar" class="img-circle"></td>
-                    <td>Roi Rav-Hon</td>
-                    <td>1/1/1970 15:42</td>
-                    <td><img class="result-table-img" src="img/cup.png"></td>
-                    <td>100</td>
-                </tr>
-                <tr>
-                    <td class="text-center"><img src="http://gravatar.com/avatar/26ee46d586ed398204905ef5dab1f3a1" alt="avatar" class="img-circle">
-                        <strong>VS</strong></b><img src="http://gravatar.com/avatar/26ee46d586ed398204905ef5dab1f3a1" alt="avatar" class="img-circle"></td>
-                    <td>Roi Rav-Hon</td>
-                    <td>1/1/1971 15:42</td>
-                    <td><img class="result-table-img" src="img/ashamed.png"></td>
-                    <td>0</td>
+                <tr ng-repeat="gameResult in gameResults">
+                    <td class="text-center">
+                        <img gravatar-src-once="user.email" alt="avatar" class="widget-image img-circle">
+                        <strong>.VS</strong>
+                        <img gravatar-src-once="gameResult.opponentEmail" alt="avatar" class="widget-image img-circle">
+                    </td>
+                    <td>{{gameResult.opponentName}}</td>
+                    <td>{{gameResult.startTime | date:'medium'}}</td>
+                    <td ng-if="gameResult.win"><img class="result-table-img" src="img/cup.png"></td>
+                    <td ng-if="!gameResult.win"><img class="result-table-img" src="img/ashamed.png"></td>
+                    <td>{{gameResult.experience}}</td>
                 </tr>
                 </tbody>
             </table>
