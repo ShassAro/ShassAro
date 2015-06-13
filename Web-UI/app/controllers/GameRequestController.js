@@ -58,27 +58,45 @@ ShassaroApp.factory('GameRequestSocket', function ($websocket, $interval, SETTIN
 });
 
 
-ShassaroApp.controller('GameRequestController', function ($scope, $location, $interval, $timeout, GameRequestSocket, GameRequestStatuses, Quotes) {
+ShassaroApp.controller('GameRequestController', function ($scope, $location, $interval, $timeout, $http, GameRequests, GameRequestStatuses, Quotes) {
     $scope.username = $scope.currentUser.username;
-    $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE', 'ERROR'];
-    $scope.socket = GameRequestSocket.getSocket();
-    $scope.socket.onMessage(function (event) {
-        var requestStatus = JSON.parse(event.data)[0].fields;
-        GameRequestStatuses.get({status: requestStatus.status}).$promise.then(function (status) {
-            requestStatus.status = status;
-            $scope.setStatus({
-                status: requestStatus.status.status,
-                step: $scope.getStep(requestStatus.status.status),
-                percent: $scope.getPercentComplete(requestStatus.status.status),
-                message: requestStatus.status.message
+    $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE'];
+    //$scope.socket = GameRequestSocket.getSocket();
+    //$scope.socket.onMessage(function (event) {
+    //    var requestStatus = JSON.parse(event.data)[0].fields;
+    //    GameRequestStatuses.get({status: requestStatus.status}).$promise.then(function (status) {
+    //        requestStatus.status = status;
+    //        $scope.setStatus({
+    //            status: requestStatus.status.status,
+    //            step: $scope.getStep(requestStatus.status.status),
+    //            percent: $scope.getPercentComplete(requestStatus.status.status),
+    //            message: requestStatus.status.message
+    //        });
+    //    });
+    //});
+
+    $scope.pollInterval = $interval(function () {
+        GameRequests.get({username: $scope.username}).$promise.then(function (requestStatus) {
+            $http.get(requestStatus.status).success(function (status) {
+                requestStatus.status = status;
+                $scope.setStatus({
+                    status: requestStatus.status.status,
+                    step: $scope.getStep(requestStatus.status.status),
+                    percent: $scope.getPercentComplete(requestStatus.status.status),
+                    message: requestStatus.status.message
+                });
             });
         });
-    });
+    }, 2000);
 
     $scope.stepsInfo = [];
     $scope.setStatus = function (status) {
+        if(status.status == $scope.currentStatus){
+            return;
+        }
+
         $scope.currentStatus = status.status;
-        $scope.gameRequestError = $scope.currentStatus == $scope.statusNames[3];
+        $scope.gameRequestError = $scope.currentStatus == 'ERROR';
         $scope.currentStep = status.step;
         $scope.percentComplete = status.percent;
         $scope.currentMessage = status.message;
@@ -90,6 +108,10 @@ ShassaroApp.controller('GameRequestController', function ($scope, $location, $in
                 $location.path('/game');
             }, 2000);
         }
+    };
+
+    $scope.isCurrentStep = function (stepInfo) {
+        return $scope.stepsInfo.indexOf(stepInfo) == ($scope.stepsInfo.length - 1);
     };
 
 
@@ -124,8 +146,8 @@ ShassaroApp.controller('GameRequestController', function ($scope, $location, $in
     $scope.getQuote();
     $scope.quotesInterval = $interval($scope.getQuote, 10*1000);
     $scope.$on('$destroy', function() {
-        $scope.socket.close();
+        //$scope.socket.close();
         $interval.cancel($scope.quotesInterval);
-        delete $scope.quotesInterval;
+        $interval.cancel($scope.pollInterval);
     });
 });

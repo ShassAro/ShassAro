@@ -1,75 +1,63 @@
 'use strict';
 
-ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Session) {
-    var setCallbacks = function (socket) {
+//ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Session) {
+//    var setCallbacks = function (socket) {
+//
+//    };
+//
+//    return {
+//        getSocket: function () {
+//            console.log('Getting a Game socket');
+//            var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '-game?subscribe-broadcast&echo');
+//            var heartbeatMessage = '--heartbeat--', heartbeatInterval = null, missedHeartbeats = 0;
+//
+//            socket.onOpen(function () {
+//                console.debug('gamesocket on-open');
+//                console.debug(arguments);
+//                //missedHeartbeats = 0;
+//                //heartbeatInterval = $interval(function () {
+//                //    try
+//                //    {
+//                //        missedHeartbeats++;
+//                //        console.debug(missedHeartbeats);
+//                //        if(missedHeartbeats >= 10)
+//                //            throw new Error("Too many missed heartbeats");
+//                //        socket.send(heartbeatMessage);
+//                //    }
+//                //    catch(e){
+//                //        console.error(e);
+//                //        $interval.cancel(heartbeatInterval);
+//                //        heartbeatInterval = null;
+//                //        socket.close();
+//                //    }
+//                //},2000);
+//            });
+//
+//            //socket.onMessage(function (event) {
+//            //    if(event.data === heartbeatMessage) {
+//            //        missedHeartbeats = 0;
+//            //        console.debug('zeroing missed heartbeats');
+//            //        socket.send(heartbeatMessage);
+//            //    }
+//            //});
+//
+//            socket.onClose(function () {
+//                console.debug('gamesocket on-close');
+//                console.debug(arguments);
+//                $interval.cancel(heartbeatInterval);
+//            });
+//
+//            socket.onError(function () {
+//                console.debug('gamesocket on-error');
+//                console.debug(arguments);
+//            });
+//
+//            return socket;
+//        }
+//    }
+//});
 
-    };
-
-    return {
-        getSocket: function () {
-            console.log('Getting a Game socket');
-            var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '-game?subscribe-broadcast&echo');
-            var heartbeatMessage = '--heartbeat--', heartbeatInterval = null, missedHeartbeats = 0;
-
-            socket.onOpen(function () {
-                console.debug('gamesocket on-open');
-                console.debug(arguments);
-                //missedHeartbeats = 0;
-                //heartbeatInterval = $interval(function () {
-                //    try
-                //    {
-                //        missedHeartbeats++;
-                //        console.debug(missedHeartbeats);
-                //        if(missedHeartbeats >= 10)
-                //            throw new Error("Too many missed heartbeats");
-                //        socket.send(heartbeatMessage);
-                //    }
-                //    catch(e){
-                //        console.error(e);
-                //        $interval.cancel(heartbeatInterval);
-                //        heartbeatInterval = null;
-                //        socket.close();
-                //    }
-                //},2000);
-            });
-
-            //socket.onMessage(function (event) {
-            //    if(event.data === heartbeatMessage) {
-            //        missedHeartbeats = 0;
-            //        console.debug('zeroing missed heartbeats');
-            //        socket.send(heartbeatMessage);
-            //    }
-            //});
-
-            socket.onClose(function () {
-                console.debug('gamesocket on-close');
-                console.debug(arguments);
-                $interval.cancel(heartbeatInterval);
-            });
-
-            socket.onError(function () {
-                console.debug('gamesocket on-error');
-                console.debug(arguments);
-            });
-
-            return socket;
-        }
-    }
-});
-
-ShassaroApp.controller('GameController', function ($scope, $interval, $location, GameSocket, ActiveGames, Users) {
-    //$scope.socket = GameSocket.getSocket();
-    //$scope.socket.onMessage(function (event) {
-    //    var data = JSON.parse(event.data);
-    //    if(angular.isDefined(data.id)){
-    //        // game is over
-    //        $location.path('/gameResult');
-    //    }
-    //    else{
-    //        // handle active game object
-    //        $scope.opponentGoalsCompleted = data.remote_goals_count;
-    //    }
-    //});
+ShassaroApp.controller('GameController', function ($scope, $interval, $location, ActiveGames, Users) {
 
     App.sidebar('close-sidebar');
 

@@ -1,19 +1,20 @@
 <div>
-    <h1 class="text-center">Challenge Accpeted!</h1>
-    <hr/>
-    <div class="row">
-        <div class="col-md-12 text-center">
-                <div class="preloader-spinner"></div>
-        </div>
-    </div>
-    <hr/>
     <div class="container-fluid" ng-if="gameRequestError">
-        <div class="well well-lg alert alert-danger">
+        <div class="text-center">
             <h1>OMG! THEY KILLED KENNY!</h1>
             <img src="img/kenny.png" alt="Kenny"/>
+            <h3>Something went wrong with your game request, please try again :)</h3>
         </div>
     </div>
     <div class="container-fluid" ng-if="!gameRequestError">
+        <h1 class="text-center">Challenge Accpeted!</h1>
+        <hr/>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="preloader-spinner"></div>
+            </div>
+        </div>
+        <hr/>
         <div class="row">
             <div class="col-md-4 col-md-push-4">
                 <div class="progress">
@@ -32,15 +33,24 @@
                 <h4><i>"{{quote}}"</i></h4>
             </div>
         </div>
-        <div ng-repeat="stepName in statusNames" class="row" ng-if="$index < currentStep">
+        <div ng-repeat="stepInfo in stepsInfo">
             <div class="col-md-10 col-md-push-1 text-primary">
-                <h3 ng-class="{'text-warning':stepsInfo[$index].status == statusNames[0],'text-info':stepsInfo[$index].status == statusNames[1],'text-success':stepsInfo[$index].status == statusNames[2]}">
-
-                    <span ng-if="stepsInfo[$index].step == currentStep" class="glyphicon glyphicon-unchecked"></span>
-                    <span ng-if="stepsInfo[$index].step < currentStep" class="glyphicon glyphicon-check"></span>
-
-                    {{stepsInfo[$index].message}}</h3>
+                <h3 ng-class="{'text-warning':stepInfo.status == statusNames[0],'text-info':stepInfo.status == statusNames[1],'text-success':stepInfo.status == statusNames[2]}">
+                    <span ng-if="isCurrentStep(stepInfo)" class="glyphicon glyphicon-unchecked"></span>
+                    <span ng-if="!isCurrentStep(stepInfo)" class="glyphicon glyphicon-checked"></span>
+                    {{stepInfo.message}}
+                </h3>
             </div>
         </div>
+        <!--<div ng-repeat="stepName in statusNames" class="row" ng-if="$index < currentStep">-->
+            <!--<div class="col-md-10 col-md-push-1 text-primary">-->
+                <!--<h3 ng-class="{'text-warning':stepsInfo[$index].status == statusNames[0],'text-info':stepsInfo[$index].status == statusNames[1],'text-success':stepsInfo[$index].status == statusNames[2]}">-->
+
+                    <!--<span ng-if="stepsInfo[$index].step == currentStep" class="glyphicon glyphicon-unchecked"></span>-->
+                    <!--<span ng-if="stepsInfo[$index].step < currentStep" class="glyphicon glyphicon-check"></span>-->
+
+                    <!--{{stepsInfo[$index].message}}</h3>-->
+            <!--</div>-->
+        <!--</div>-->
     </div>
 </div>
