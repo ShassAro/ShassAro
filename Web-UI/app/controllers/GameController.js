@@ -14,32 +14,32 @@ ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Ses
             socket.onOpen(function () {
                 console.debug('gamesocket on-open');
                 console.debug(arguments);
-                missedHeartbeats = 0;
-                heartbeatInterval = $interval(function () {
-                    try
-                    {
-                        missedHeartbeats++;
-                        console.debug(missedHeartbeats);
-                        if(missedHeartbeats >= 10)
-                            throw new Error("Too many missed heartbeats");
-                        socket.send(heartbeatMessage);
-                    }
-                    catch(e){
-                        console.error(e);
-                        $interval.cancel(heartbeatInterval);
-                        heartbeatInterval = null;
-                        socket.close();
-                    }
-                },2000)
+                //missedHeartbeats = 0;
+                //heartbeatInterval = $interval(function () {
+                //    try
+                //    {
+                //        missedHeartbeats++;
+                //        console.debug(missedHeartbeats);
+                //        if(missedHeartbeats >= 10)
+                //            throw new Error("Too many missed heartbeats");
+                //        socket.send(heartbeatMessage);
+                //    }
+                //    catch(e){
+                //        console.error(e);
+                //        $interval.cancel(heartbeatInterval);
+                //        heartbeatInterval = null;
+                //        socket.close();
+                //    }
+                //},2000);
             });
 
-            socket.onMessage(function (event) {
-                if(event.data === heartbeatMessage) {
-                    missedHeartbeats = 0;
-                    console.debug('zeroing missed heartbeats');
-                    socket.send(heartbeatMessage);
-                }
-            });
+            //socket.onMessage(function (event) {
+            //    if(event.data === heartbeatMessage) {
+            //        missedHeartbeats = 0;
+            //        console.debug('zeroing missed heartbeats');
+            //        socket.send(heartbeatMessage);
+            //    }
+            //});
 
             socket.onClose(function () {
                 console.debug('gamesocket on-close');
@@ -58,18 +58,18 @@ ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Ses
 });
 
 ShassaroApp.controller('GameController', function ($scope, $interval, $location, GameSocket, ActiveGames, Users) {
-    $scope.socket = GameSocket.getSocket();
-    $scope.socket.onMessage(function (event) {
-        var data = JSON.parse(event.data);
-        if(angular.isDefined(data.id)){
-            // game is over
-            $location.path('/gameResult');
-        }
-        else{
-            // handle active game object
-            $scope.opponentGoalsCompleted = data.remote_goals_count;
-        }
-    });
+    //$scope.socket = GameSocket.getSocket();
+    //$scope.socket.onMessage(function (event) {
+    //    var data = JSON.parse(event.data);
+    //    if(angular.isDefined(data.id)){
+    //        // game is over
+    //        $location.path('/gameResult');
+    //    }
+    //    else{
+    //        // handle active game object
+    //        $scope.opponentGoalsCompleted = data.remote_goals_count;
+    //    }
+    //});
 
     App.sidebar('close-sidebar');
 
@@ -109,6 +109,18 @@ ShassaroApp.controller('GameController', function ($scope, $interval, $location,
            $scope.dockerConnectionError = true;
         });
 
+    $scope.pollInterval = $interval(function () {
+        ActiveGames.get({username: $scope.username}).$promise.then(function (gameInfo) {
+            if(angular.isDefined(gameInfo.id)){
+                // game is over
+                $location.path('/gameResult');
+            }
+            else{
+                // handle active game object
+                $scope.opponentGoalsCompleted = gameInfo.remote_goals_count;
+            }
+        });
+    },5000);
 
     $scope.verifyGoal = function (goal) {
         goal.invoked = true;
@@ -121,6 +133,6 @@ ShassaroApp.controller('GameController', function ($scope, $interval, $location,
 
     $scope.$on('$destroy', function() {
         App.sidebar('open-sidebar');
-        $scope.socket.close();
+        $interval.cancel($scope.pollInterval);
     });
 });
