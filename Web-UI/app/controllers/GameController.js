@@ -1,6 +1,5 @@
 'use strict';
 
-
 ShassaroApp.factory('GameSocket', function ($websocket, SETTINGS, Session) {
     var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '-game?subscribe-broadcast&echo');
 
