@@ -61,19 +61,6 @@ ShassaroApp.factory('GameRequestSocket', function ($websocket, $interval, SETTIN
 ShassaroApp.controller('GameRequestController', function ($scope, $location, $interval, $timeout, $http, GameRequests, GameRequestStatuses, Quotes) {
     $scope.username = $scope.currentUser.username;
     $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE'];
-    //$scope.socket = GameRequestSocket.getSocket();
-    //$scope.socket.onMessage(function (event) {
-    //    var requestStatus = JSON.parse(event.data)[0].fields;
-    //    GameRequestStatuses.get({status: requestStatus.status}).$promise.then(function (status) {
-    //        requestStatus.status = status;
-    //        $scope.setStatus({
-    //            status: requestStatus.status.status,
-    //            step: $scope.getStep(requestStatus.status.status),
-    //            percent: $scope.getPercentComplete(requestStatus.status.status),
-    //            message: requestStatus.status.message
-    //        });
-    //    });
-    //});
 
     $scope.pollInterval = $interval(function () {
         GameRequests.get({username: $scope.username}).$promise.then(function (requestStatus) {
@@ -86,6 +73,9 @@ ShassaroApp.controller('GameRequestController', function ($scope, $location, $in
                     message: requestStatus.status.message
                 });
             });
+        }).catch(function () {
+            $scope.gameRequestError = true;
+            $interval.cancel($scope.pollInterval);
         });
     }, 2000);
 
@@ -146,7 +136,6 @@ ShassaroApp.controller('GameRequestController', function ($scope, $location, $in
     $scope.getQuote();
     $scope.quotesInterval = $interval($scope.getQuote, 10*1000);
     $scope.$on('$destroy', function() {
-        //$scope.socket.close();
         $interval.cancel($scope.quotesInterval);
         $interval.cancel($scope.pollInterval);
     });

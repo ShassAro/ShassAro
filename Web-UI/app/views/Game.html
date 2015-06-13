@@ -5,13 +5,19 @@
         <h2>We had serious problems getting your challenge up...</h2>
     </div>
 </div>
+<div class="row" ng-if="userGivedUp">
+    <div class="col-md-12 text-center text-warning" style="padding-top: 15%;">
+        <div class="preloader-spinner"></div>
+        <h2>Calculating your game results</h2>
+    </div>
+</div>
 <div class="row" ng-if="isConnected==false && dockerConnectionError == false;">
     <div class="col-md-12 text-center text-info" style="padding-top: 15%;">
         <div class="preloader-spinner"></div>
         <h2>Loading your environment</h2>
     </div>
 </div>
-<div class="row" ng-if="isConnected==true;">
+<div class="row" ng-if="isConnected==true && userGivedUp!=true;">
     <div class="col-md-9" class="animation-fadeIn">
         <vnc ng-init="display = { scale:0.7, width: 860, fitTo:'width' };"
              host="{{vncHost}}" port="{{vncPort}}" password="{{vncPassword}}"
@@ -27,10 +33,10 @@
                            class="form-control" placeholder="Insert Goal #{{$index+1}} here..."/>
                     <span class="input-group-btn">
                         <button class="btn btn-sm btn-success" disabled ng-if="goal.completed"><span class="glyphicon glyphicon-check"></span></button>
-                        <button class="btn btn-sm btn-default" ng-init="goal.hintCollapsed=true" ng-click="goal.hintCollapsed = !goal.hintCollapsed">
+                        <button class="btn btn-sm btn-default" tooltip-placement="left" tooltip="Goal description" ng-init="goal.hintCollapsed=true" ng-click="goal.hintCollapsed = !goal.hintCollapsed">
                             <span class="glyphicon glyphicon-info-sign"></span>
                         </button>
-                        <button class="btn btn-sm btn-primary" ng-init="goal.descriptionCollapsed=true" ng-click="goal.descriptionCollapsed = !goal.descriptionCollapsed">
+                        <button class="btn btn-sm btn-primary" tooltip-placement="left" tooltip="Get a hint, baby boy :)" ng-init="goal.descriptionCollapsed=true" ng-click="goal.descriptionCollapsed = !goal.descriptionCollapsed">
                             <span class="gi gi-lightbulb"></span>
                         </button>
                     </span>
@@ -41,6 +47,10 @@
                 <div collapse="goal.hintCollapsed">
                     <p><div class="alert alert-info small"><strong>Goal Description:</strong> {{goal.description}}</div></p>
                 </div>
+            </div>
+            <div class="text-center">
+                <br/>
+                <button class="btn btn-xs btn-block btn-warning" ng-click="giveUp()"><span class="glyphicon glyphicon-flag"></span> Give up</button>
             </div>
             <hr/>
             <br/>
@@ -83,21 +93,21 @@
 
                 </div>
             </div>
-            <!--start-time="gameStartTime" end-time="gameEndTime"-->
-            <!--<timer  start-time="gameStartTime" end-time="gameEndTime" interval="250">-->
-                <!--<div class="progress" style="margin-bottom: 3px;">-->
-                    <!--<div class="progress-bar progress-bar-striped active"-->
-                         <!--ng-class="{-->
-                            <!--'progress-bar-info': (100-progressBar) < 60,-->
-                            <!--'progress-bar-warning': (100-progressBar) >= 60 && (100-progressBar) < 85,-->
-                            <!--'progress-bar-danger': (100-progressBar) >= 85}"-->
-                         <!--role="progressbar" aria-valuenow="{{progress()}}"-->
-                         <!--aria-valuemin="0" aria-valuemax="100"-->
-                         <!--style="width: {{100-progressBar}}%;">-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--Elapsed time: {{hhours}}:{{mminutes}}:{{sseconds}}-->
-            <!--</timer>-->
+            <timer  start-time="gameStartTime" end-time="gameEndTime" interval="1000">
+                <div class="progress" style="margin-bottom: 3px;">
+                    <div class="progress-bar progress-bar-striped active"
+                         ng-class="{
+                            'progress-bar-info': (100-progressBar) < 60,
+                            'progress-bar-warning': (100-progressBar) >= 60 && (100-progressBar) < 85,
+                            'progress-bar-danger': (100-progressBar) >= 85}"
+                         role="progressbar" aria-valuenow="{{progress()}}"
+                         aria-valuemin="0" aria-valuemax="100"
+                         style="width: {{100-progressBar}}%;">
+                    </div>
+                </div>
+
+            </timer>
+            <timer end-time="gameEndTime">Remainig time: {{hhours}}:{{mminutes}}:{{sseconds}}</timer>
         </form>
     </div>
 </div>

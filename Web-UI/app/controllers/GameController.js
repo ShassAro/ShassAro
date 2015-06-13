@@ -119,6 +119,11 @@ ShassaroApp.controller('GameController', function ($scope, $interval, $location,
             });
     };
 
+    $scope.giveUp = function () {
+        ActiveGames.giveUp({username: $scope.username});
+        $scope.userGivedUp = true;
+    };
+
     $scope.$on('$destroy', function() {
         App.sidebar('open-sidebar');
         $interval.cancel($scope.pollInterval);
