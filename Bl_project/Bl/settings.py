@@ -46,10 +46,11 @@ INSTALLED_APPS = (
 WEBSOCKET_URL = '/ws/'
 
 MIDDLEWARE_CLASSES = (
+    'Bl.disable_csrf.DisableCSRF',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -75,6 +76,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'ws4redis.context_processors.default',
 )
+
+CSRF_COOKIE_SECURE = True
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
