@@ -4,14 +4,28 @@ ShassaroApp.factory('GameRequestStatuses', function ($resource, SETTINGS) {
     return $resource(SETTINGS.apiUrl + '/game_request_statuses/:status', {}, {});
 });
 
-ShassaroApp.factory('GameRequestSocket', function ($websocket, SETTINGS, Session) {
-    return $websocket(SETTINGS.wsUrl + Session.user.username + '?subscribe-broadcast');
+ShassaroApp.factory('GameRequestSocket', function ($websocket, $timeout, SETTINGS, Session) {
+    var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '?subscribe-broadcast&echo');
+
+    socket.onOpen(function () {
+        console.debug('gamerequestsocket on-open ' + arguments);
+    });
+
+    socket.onClose(function () {
+        console.debug('gamerequestsocket on-close ' + arguments);
+    });
+
+    socket.onError(function () {
+        console.debug('gamerequestsocket on-error ' + arguments);
+    });
+
+    return socket;
 });
 
 
 ShassaroApp.controller('GameRequestController', function ($scope, $location, $interval, $timeout, GameRequestSocket, GameRequestStatuses, Quotes) {
     $scope.username = $scope.currentUser.username;
-    $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE'];
+    $scope.statusNames = ['WAITING', 'DEPLOYING', 'DONE', 'ERROR'];
 
     GameRequestSocket.onMessage(function (event) {
         var requestStatus = JSON.parse(event.data)[0].fields;
@@ -29,12 +43,13 @@ ShassaroApp.controller('GameRequestController', function ($scope, $location, $in
     $scope.stepsInfo = [];
     $scope.setStatus = function (status) {
         $scope.currentStatus = status.status;
+        $scope.gameRequestError = $scope.currentStatus == $scope.statusNames[3];
         $scope.currentStep = status.step;
         $scope.percentComplete = status.percent;
         $scope.currentMessage = status.message;
         $scope.stepsInfo.push(status);
 
-        if (status.step == $scope.statusNames.length) {
+        if ($scope.currentStatus == $scope.statusNames[2]) {
             $scope.currentStep += 1;
             $timeout(function () {
                 $location.path('/game');

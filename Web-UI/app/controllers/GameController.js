@@ -1,7 +1,21 @@
 'use strict';
 
-ShassaroApp.factory('GameSocket', function ($websocket, SETTINGS, $rootScope) {
-    return $websocket(SETTINGS.wsUrl + $rootScope.currentUser.username + '-game?subscribe-broadcast');
+ShassaroApp.factory('GameSocket', function ($websocket, SETTINGS, Session) {
+    var socket = $websocket(SETTINGS.wsUrl + Session.user.username + '-game?subscribe-broadcast&echo');
+
+    socket.onOpen(function () {
+        console.debug('gamesocket on-open ' + arguments);
+    });
+
+    socket.onClose(function () {
+        console.debug('gamesocket on-close ' + arguments);
+    });
+
+    socket.onError(function () {
+        console.debug('gamesocket on-error ' + arguments);
+    });
+
+    return socket;
 });
 
 ShassaroApp.controller('GameController', function ($scope, $interval, $location, GameSocket, ActiveGames, Users) {
@@ -64,12 +78,6 @@ ShassaroApp.controller('GameController', function ($scope, $interval, $location,
                 $scope.gameCompleted = response.all_completed;
             });
     };
-
-    //$scope.$on('timer-stopped', function (event, data){
-    //    $scope.$apply(function () {
-    //        $location.path('/gameResult');
-    //    });
-    //});
 
     $scope.$on('$destroy', function() {
         App.sidebar('open-sidebar');
