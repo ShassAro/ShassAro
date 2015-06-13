@@ -42,6 +42,10 @@
                     <p><div class="alert alert-info small"><strong>Goal Description:</strong> {{goal.description}}</div></p>
                 </div>
             </div>
+            <div class="text-center">
+                <br/>
+                <button class="btn btn-xs btn-block btn-warning" ng-click="giveUp()"><span class="glyphicon glyphicon-flag"></span> Give up</button>
+            </div>
             <hr/>
             <br/>
             <div class="widget">
@@ -83,21 +87,21 @@
 
                 </div>
             </div>
-            <!--start-time="gameStartTime" end-time="gameEndTime"-->
-            <!--<timer  start-time="gameStartTime" end-time="gameEndTime" interval="250">-->
-                <!--<div class="progress" style="margin-bottom: 3px;">-->
-                    <!--<div class="progress-bar progress-bar-striped active"-->
-                         <!--ng-class="{-->
-                            <!--'progress-bar-info': (100-progressBar) < 60,-->
-                            <!--'progress-bar-warning': (100-progressBar) >= 60 && (100-progressBar) < 85,-->
-                            <!--'progress-bar-danger': (100-progressBar) >= 85}"-->
-                         <!--role="progressbar" aria-valuenow="{{progress()}}"-->
-                         <!--aria-valuemin="0" aria-valuemax="100"-->
-                         <!--style="width: {{100-progressBar}}%;">-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--Elapsed time: {{hhours}}:{{mminutes}}:{{sseconds}}-->
-            <!--</timer>-->
+            <timer  start-time="gameStartTime" end-time="gameEndTime" interval="1000">
+                <div class="progress" style="margin-bottom: 3px;">
+                    <div class="progress-bar progress-bar-striped active"
+                         ng-class="{
+                            'progress-bar-info': (100-progressBar) < 60,
+                            'progress-bar-warning': (100-progressBar) >= 60 && (100-progressBar) < 85,
+                            'progress-bar-danger': (100-progressBar) >= 85}"
+                         role="progressbar" aria-valuenow="{{progress()}}"
+                         aria-valuemin="0" aria-valuemax="100"
+                         style="width: {{100-progressBar}}%;">
+                    </div>
+                </div>
+
+            </timer>
+            <timer end-time="gameEndTime">Remainig time: {{hhours}}:{{mminutes}}:{{sseconds}}</timer>
         </form>
     </div>
 </div>
