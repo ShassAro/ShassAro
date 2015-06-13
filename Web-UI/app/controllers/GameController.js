@@ -1,6 +1,10 @@
 'use strict';
 
 ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Session) {
+    var setCallbacks = function (socket) {
+
+    };
+
     return {
         getSocket: function () {
             console.log('Getting a Game socket');
@@ -26,7 +30,7 @@ ShassaroApp.factory('GameSocket', function ($websocket, $interval, SETTINGS, Ses
                         heartbeatInterval = null;
                         socket.close();
                     }
-                },5000)
+                },2000)
             });
 
             socket.onMessage(function (event) {
@@ -116,5 +120,6 @@ ShassaroApp.controller('GameController', function ($scope, $interval, $location,
 
     $scope.$on('$destroy', function() {
         App.sidebar('open-sidebar');
+        $scope.socket.close();
     });
 });
