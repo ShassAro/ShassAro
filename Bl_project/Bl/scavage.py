@@ -132,7 +132,7 @@ def scavage_orphand_dockers():
             return str_to_return
 
     except Exception as e:
-        return "Something went wrong. Exception: " + str(e) + str(e.message)
+        return "Something went wrong. Exception: " + str(e) + str(e.message)  # just a comment
 
 def scavage():
     # Init objects

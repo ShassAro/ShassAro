@@ -30,7 +30,7 @@ def main():
 
             print str_to_write
     except Exception as e:
-        print str(datetime.now()) + ' - Exception occurred: ' + str(e) + str(e.message)
+        print str(datetime.now()) + ' - Exception occurred: ' + str(e) + str(e.message)  # Comment 123
 
 if __name__ == '__main__':
     main()
