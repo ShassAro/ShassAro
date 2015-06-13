@@ -10,6 +10,7 @@ ShassaroApp.service('AuthenticationResolver', function ($q, $rootScope, $locatio
         else {
             deferred.reject();
             $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated, $location.path());
+            console.log('not-authenticated');
             $location.path('/');
         }
 
@@ -24,6 +25,7 @@ ShassaroApp.service('AuthenticationResolver', function ($q, $rootScope, $locatio
             if(retryCount++ >= maxRetryCount){
                 deferred.reject();
                 $interval.cancel(interval);
+                $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated, $location.path());
                 return;
             }
             if(AuthenticationService.isAuthenticated()){

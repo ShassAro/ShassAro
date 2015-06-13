@@ -5,13 +5,19 @@
         <h2>We had serious problems getting your challenge up...</h2>
     </div>
 </div>
+<div class="row" ng-if="userGivedUp">
+    <div class="col-md-12 text-center text-warning" style="padding-top: 15%;">
+        <div class="preloader-spinner"></div>
+        <h2>Calculating your game results</h2>
+    </div>
+</div>
 <div class="row" ng-if="isConnected==false && dockerConnectionError == false;">
     <div class="col-md-12 text-center text-info" style="padding-top: 15%;">
         <div class="preloader-spinner"></div>
         <h2>Loading your environment</h2>
     </div>
 </div>
-<div class="row" ng-if="isConnected==true;">
+<div class="row" ng-if="isConnected==true && userGivedUp!=true;">
     <div class="col-md-9" class="animation-fadeIn">
         <vnc ng-init="display = { scale:0.7, width: 860, fitTo:'width' };"
              host="{{vncHost}}" port="{{vncPort}}" password="{{vncPassword}}"
@@ -27,10 +33,10 @@
                            class="form-control" placeholder="Insert Goal #{{$index+1}} here..."/>
                     <span class="input-group-btn">
                         <button class="btn btn-sm btn-success" disabled ng-if="goal.completed"><span class="glyphicon glyphicon-check"></span></button>
-                        <button class="btn btn-sm btn-default" ng-init="goal.hintCollapsed=true" ng-click="goal.hintCollapsed = !goal.hintCollapsed">
+                        <button class="btn btn-sm btn-default" tooltip-placement="left" tooltip="Goal description" ng-init="goal.hintCollapsed=true" ng-click="goal.hintCollapsed = !goal.hintCollapsed">
                             <span class="glyphicon glyphicon-info-sign"></span>
                         </button>
-                        <button class="btn btn-sm btn-primary" ng-init="goal.descriptionCollapsed=true" ng-click="goal.descriptionCollapsed = !goal.descriptionCollapsed">
+                        <button class="btn btn-sm btn-primary" tooltip-placement="left" tooltip="Get a hint, baby boy :)" ng-init="goal.descriptionCollapsed=true" ng-click="goal.descriptionCollapsed = !goal.descriptionCollapsed">
                             <span class="gi gi-lightbulb"></span>
                         </button>
                     </span>

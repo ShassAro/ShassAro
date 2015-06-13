@@ -8,7 +8,7 @@ ShassaroApp.controller('DashboardController', function ($scope, Users, Session, 
 
     GameResults.query().$promise.then(function (gameResults) {
         gameResults = gameResults.sort(function (a, b) {
-            return new Date(a.start_time) - new Date(b.start_time);
+            return -(new Date(a.start_time) - new Date(b.start_time));
         });
 
         for(var i in gameResults) {
