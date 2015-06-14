@@ -82,7 +82,7 @@ def scavage_orphand_dockers():
         # Get Docker Servers
         docker_servers_obj = DockerServer.objects.all()
         for docker_server_obj in docker_servers_obj:
-            json_to_send['dockerServers'].append("{0}://{1}:{2}/api/docker"
+            json_to_send['dockerServers'].append("{0}://{1}:{2}"
                 .format(docker_server_obj.protocol, docker_server_obj.ip, docker_server_obj.port))
 
         logger.debug("Sending {0} json to server.".format(json_to_send))
