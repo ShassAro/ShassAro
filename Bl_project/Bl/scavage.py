@@ -5,7 +5,9 @@ from rest_framework import status
 from datetime import timedelta, datetime
 import requests
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 
 def scavage_games():
     try:
@@ -71,6 +73,8 @@ def scavage_orphand_dockers():
         docker_manager_obj = DockerManager.objects.all()[0]
         docker_manager_url = "http://{0}:{1}/list".format(docker_manager_obj.ip, docker_manager_obj.port)
 
+        logger.debug("Docker manager URL: {0}".format(docker_manager_url))
+
         json_to_send = {"dockerServers": []}
 
         # Get Docker Servers
@@ -78,13 +82,19 @@ def scavage_orphand_dockers():
         for docker_server_obj in docker_servers_obj:
             json_to_send['dockerServers'].append("{0}://{1}:{2}".format(docker_server_obj.protocol, docker_server_obj.ip, docker_server_obj.port))
 
+        logger.debug("Sending {0} json to server.".format(json_to_send))
+
         # Send a list get request to the Docker Manager
         response = requests.get(docker_manager_url, json=json_to_send)
+
+        logger.debug("Got response: {0} from server.".format(response))
 
         if response.status_code != status.HTTP_200_OK:
             str_to_return = "An error has occurred while getting the docker list"
 
         docker_servers_and_ids = json.loads(response.content)
+
+        logger.debug("Docker servers and ids: {0}".foramt(docker_servers_and_ids))
 
         # Remove valid docker ids from the list
         for docker_id in valid_docker_ids:
@@ -99,6 +109,7 @@ def scavage_orphand_dockers():
 
         # If orphan docker ids found
         if len(docker_servers_and_ids) > 0:
+            logger.debug("Found docker server with orphan dockers: {0}".format(docker_servers_and_ids))
             dockers_running_with_no_game_bool = True
             str_to_return = "Found dockers running with no game"
 
@@ -117,8 +128,12 @@ def scavage_orphand_dockers():
                     docker_manager_obj = DockerManager.objects.all()[0]
                     docker_manager_url = "http://{0}:{1}/kill".format(docker_manager_obj.ip, docker_manager_obj.port)
 
+                    logger.debug("Docker Manager Kill URL: {0}".format(docker_manager_url))
+
                     # Send the kill!
                     response = requests.post(docker_manager_url, json=kill_json)
+
+                    logger.debug("Got response: {0} from server.".format(response))
 
                     if response.status_code != status.HTTP_200_OK:
                         pass
