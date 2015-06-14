@@ -5,7 +5,9 @@ from rest_framework import status
 from datetime import timedelta, datetime
 import requests
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 
 def scavage_games():
     try:
@@ -58,6 +60,8 @@ def scavage_defunct_shassaros():
 
 def scavage_orphand_dockers():
     try:
+        logger.debug("Started scavage_orphand_docker()")
+
         str_to_return = ''
 
         # Scavage dockers that are running with no active game
@@ -69,22 +73,31 @@ def scavage_orphand_dockers():
 
         # Get Docker Manager List URL
         docker_manager_obj = DockerManager.objects.all()[0]
-        docker_manager_url = "http://{0}:{1}/list".format(docker_manager_obj.ip, docker_manager_obj.port)
+        docker_manager_url = "http://{0}:{1}/api/docker/list".format(docker_manager_obj.ip, docker_manager_obj.port)
+
+        logger.debug("Docker manager URL: {0}".format(docker_manager_url))
 
         json_to_send = {"dockerServers": []}
 
         # Get Docker Servers
         docker_servers_obj = DockerServer.objects.all()
         for docker_server_obj in docker_servers_obj:
-            json_to_send['dockerServers'].append("{0}://{1}:{2}".format(docker_server_obj.protocol, docker_server_obj.ip, docker_server_obj.port))
+            json_to_send['dockerServers'].append("{0}://{1}:{2}"
+                .format(docker_server_obj.protocol, docker_server_obj.ip, docker_server_obj.port))
+
+        logger.debug("Sending {0} json to server.".format(json_to_send))
 
         # Send a list get request to the Docker Manager
         response = requests.get(docker_manager_url, json=json_to_send)
+
+        logger.debug("Got response: {0} from server.".format(response))
 
         if response.status_code != status.HTTP_200_OK:
             str_to_return = "An error has occurred while getting the docker list"
 
         docker_servers_and_ids = json.loads(response.content)
+
+        #logger.debug("Docker servers and ids: {0}".foramt(docker_servers_and_ids))
 
         # Remove valid docker ids from the list
         for docker_id in valid_docker_ids:
@@ -99,6 +112,7 @@ def scavage_orphand_dockers():
 
         # If orphan docker ids found
         if len(docker_servers_and_ids) > 0:
+            #logger.debug("Found docker server with orphan dockers: {0}".format(docker_servers_and_ids))
             dockers_running_with_no_game_bool = True
             str_to_return = "Found dockers running with no game"
 
@@ -115,10 +129,14 @@ def scavage_orphand_dockers():
 
                     # Get Docker Manager Kill URL
                     docker_manager_obj = DockerManager.objects.all()[0]
-                    docker_manager_url = "http://{0}:{1}/kill".format(docker_manager_obj.ip, docker_manager_obj.port)
+                    docker_manager_url = "http://{0}:{1}/api/docker/kill".format(docker_manager_obj.ip, docker_manager_obj.port)
+
+                    logger.debug("Docker Manager Kill URL: {0}".format(docker_manager_url))
 
                     # Send the kill!
                     response = requests.post(docker_manager_url, json=kill_json)
+
+                    logger.debug("Got response: {0} from server.".format(response))
 
                     if response.status_code != status.HTTP_200_OK:
                         pass
@@ -132,9 +150,11 @@ def scavage_orphand_dockers():
             return str_to_return
 
     except Exception as e:
-        return "Something went wrong. Exception: " + str(e) + str(e.message)  # just a comment
+        return "Something went wrong. Exception: " + str(e)
 
 def scavage():
+    logger.debug("scavage() --- started")
+
     # Init objects
     statuses = {}
 
@@ -142,8 +162,15 @@ def scavage():
     dockers_running_with_no_game_bool = False
 
     statuses['games'] = scavage_games()
+    logger.debug("scavage() --- got scavage_games() result: {0}".format(statuses['games']))
+
     statuses['defunct_shassaro'] = scavage_defunct_shassaros()
+    logger.debug("scavage() --- got scavage_defunct_shassaros() result: {0}"
+                 .format(statuses['defunct_shassaro']))
+
     statuses['dockers_running_with_no_game'] = scavage_orphand_dockers()
+    logger.debug("scavage() --- got dockers_running_with_no_game() result: {0}"
+                 .format(statuses['dockers_running_with_no_game']))
 
     # Return scavaging results
     all_ok_bool = True
