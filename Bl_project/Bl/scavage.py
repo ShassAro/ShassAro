@@ -73,7 +73,7 @@ def scavage_orphand_dockers():
 
         # Get Docker Manager List URL
         docker_manager_obj = DockerManager.objects.all()[0]
-        docker_manager_url = "http://{0}:{1}/list".format(docker_manager_obj.ip, docker_manager_obj.port)
+        docker_manager_url = "http://{0}:{1}/api/docker/list".format(docker_manager_obj.ip, docker_manager_obj.port)
 
         logger.debug("Docker manager URL: {0}".format(docker_manager_url))
 
@@ -82,7 +82,8 @@ def scavage_orphand_dockers():
         # Get Docker Servers
         docker_servers_obj = DockerServer.objects.all()
         for docker_server_obj in docker_servers_obj:
-            json_to_send['dockerServers'].append("{0}://{1}:{2}".format(docker_server_obj.protocol, docker_server_obj.ip, docker_server_obj.port))
+            json_to_send['dockerServers'].append("{0}://{1}:{2}/api/docker"
+                .format(docker_server_obj.protocol, docker_server_obj.ip, docker_server_obj.port))
 
         logger.debug("Sending {0} json to server.".format(json_to_send))
 
@@ -128,7 +129,7 @@ def scavage_orphand_dockers():
 
                     # Get Docker Manager Kill URL
                     docker_manager_obj = DockerManager.objects.all()[0]
-                    docker_manager_url = "http://{0}:{1}/kill".format(docker_manager_obj.ip, docker_manager_obj.port)
+                    docker_manager_url = "http://{0}:{1}/api/docker/kill".format(docker_manager_obj.ip, docker_manager_obj.port)
 
                     logger.debug("Docker Manager Kill URL: {0}".format(docker_manager_url))
 
