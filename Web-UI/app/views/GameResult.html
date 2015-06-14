@@ -11,6 +11,7 @@
 <div class="block" ng-switch="userWon">
     <div id="win" ng-switch-when="true">
         <h1 align="center">You won!</h1>
+
         <div align="center">
             <img class="result-img" src="img/cup.png">
         </div>
@@ -18,20 +19,24 @@
     </div>
     <div id="lost" ng-switch-default>
         <h1 align="center">You lost!</h1>
+
         <div align="center">
             <img class="result-img" src="img/ashamed.png">
         </div>
         <h3 align="center">Somewhere around the world, because of you, a penguin is trying to learn .NET</h3>
     </div>
     <br>
+
     <div class="row result-fontsize">
         <div align="center">
             The game took <strong>{{gameResult.actual_duration_minutes}}</strong> minutes <br>
             <span ng-if="userWon">
             You have gained <strong>{{gameResult.experience_gained}}</strong> experience points! <br>
                 </span>
-            This challenge included these tags: <strong ng-repeat="tag in gameTags">{{tag}}</strong>
-            <!--<strong>bash</strong>, <strong>tahat</strong>, <strong>tusik</strong><br>-->
+            This challenge included these tags:
+
+            <span ng-repeat="tag in gameTags"><span class="label label-info">{{tag}}</span> </span>
+
             <br>
         </div>
     </div>

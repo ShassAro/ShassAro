@@ -18,9 +18,8 @@
     </div>
 </div>
 <div class="row" ng-if="isConnected==true && userGivedUp!=true;">
-    <div class="col-md-9" class="animation-fadeIn">
-        <vnc ng-init="display = { scale:0.7, width: 860, fitTo:'width' };"
-             host="{{vncHost}}" port="{{vncPort}}" password="{{vncPassword}}"
+    <div class="col-md-9" class="animation-fadeIn" id="vnc">
+        <vnc host="{{vncHost}}" port="{{vncPort}}" password="{{vncPassword}}"
              is-connected="isConnected" display="display">
         </vnc>
     </div>

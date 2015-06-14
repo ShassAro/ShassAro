@@ -10,8 +10,8 @@ ShassaroApp.constant('AUTH_EVENTS',{
 });
 
 ShassaroApp.constant('SETTINGS',{
-    //apiUrl: 'http://10.0.0.9:1234',
+    //apiUrl: 'http://192.168.2.114:1234',
     apiUrl: 'http://www.shassaro.com/api/bl',
-    //wsUrl: 'ws://10.0.0.9:1234/ws/'
+    //wsUrl: 'ws://192.168.2.114:1234/ws/'
     wsUrl: 'ws://www.shassaro.com/ws/'
 });

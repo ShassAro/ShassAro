@@ -14,15 +14,12 @@
             <div class="col-md-6 col-lg-6">
                 <div class="row text-center">
                     <div class="col-xs-4 col-sm-3">
-                        <h2 class="animation-hatch">
-                            <strong>{{stats.games_today}}</strong><br>
-                            <small><i class="fa fa-star"></i> Games Today</small>
-                        </h2>
+
                     </div>
                     <div class="col-xs-4 col-sm-3">
                         <h2 class="animation-hatch">
                             <strong>{{stats.win_today}}</strong><br>
-                            <small><i class="fa fa-thumbs-o-up"></i> Wins Today</small>
+                            <small><i class="fa fa-thumbs-o-up"></i> Wins Total</small>
                         </h2>
                     </div>
                     <div class="col-xs-4 col-sm-3">
@@ -91,7 +88,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="gameResult in gameResults">
+                <tr ng-repeat="gameResult in gameResults | orderBy:'startTime':true">
                     <td class="text-center">
                         <img gravatar-src-once="user.email" alt="avatar" class="widget-image img-circle">
                         <strong>.VS</strong>

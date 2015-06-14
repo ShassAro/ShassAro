@@ -65,6 +65,30 @@ ShassaroApp.controller('GameController', function ($scope, $interval, $location,
     $scope.username = $scope.currentUser.username;
     $scope.gameCompleted = false;
 
+    $scope.getVncDivWidth = function () {
+        return $scope.vncDiv.width();
+    };
+    $scope.$watch('isConnected', function (newValue, oldValue) {
+       $scope.vncDivReadyInterval = $interval(function () {
+           console.debug('#vnc.ready interval');
+           $scope.vncDiv = angular.element('#vnc');
+           if($scope.vncDiv == null) return;
+
+           // div #vnc is ready - cancel the interval
+           $interval.cancel($scope.vncDivReadyInterval);
+
+           $scope.display.width = $scope.vncDiv.width();
+           $scope.$watch($scope.getVncDivWidth, function () {
+               $scope.display.width = $scope.vncDiv.width();
+           });
+       },50);
+    });
+
+    $scope.display = {
+        scale : 1,
+        fitTo: 'width'
+    };
+
     $scope.getOpponentGoalsCount = function () {
         return Array($scope.opponentGoalsCompleted);
     };
@@ -122,6 +146,7 @@ ShassaroApp.controller('GameController', function ($scope, $interval, $location,
     $scope.giveUp = function () {
         ActiveGames.giveUp({username: $scope.username});
         $scope.userGivedUp = true;
+        $interval.cancel($scope.pollInterval);
     };
 
     $scope.$on('$destroy', function() {
