@@ -598,3 +598,16 @@ class UserStatsView(APIView):
 
         return Response(resultJson, status=status.HTTP_200_OK)
 
+
+class GameResultSpecificUser(APIView):
+
+    def get(self, request, *args, **kwargs):
+
+        username = kwargs["username"]
+
+        gameresults = GameResult.objects.filter(Q(winning_users=User.objects.filter(username=username)) |
+                                                Q(losing_users=User.objects.filter(username=username)))
+
+        returnJson = serializers.serialize("json", gameresults)
+
+        return Response(data=returnJson, status=status.HTTP_200_OK)

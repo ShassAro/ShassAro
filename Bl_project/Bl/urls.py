@@ -37,4 +37,5 @@ urlpatterns = patterns('',
     url(r'logout/$', views.LogoutView.as_view()),
     url(r'validate_token/$', views.ValidateToken.as_view()),
     url(r'forfeit/$', views.ForfeitViewSet.as_view()),
+    url(r'^game_results_user/(?P<username>\w+)/$', views.GameResultSpecificUser.as_view()),
 )
