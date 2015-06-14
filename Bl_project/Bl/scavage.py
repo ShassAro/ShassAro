@@ -97,7 +97,7 @@ def scavage_orphand_dockers():
 
         docker_servers_and_ids = json.loads(response.content)
 
-        logger.debug("Docker servers and ids: {0}".foramt(docker_servers_and_ids))
+        #logger.debug("Docker servers and ids: {0}".foramt(docker_servers_and_ids))
 
         # Remove valid docker ids from the list
         for docker_id in valid_docker_ids:
@@ -112,7 +112,7 @@ def scavage_orphand_dockers():
 
         # If orphan docker ids found
         if len(docker_servers_and_ids) > 0:
-            logger.debug("Found docker server with orphan dockers: {0}".format(docker_servers_and_ids))
+            #logger.debug("Found docker server with orphan dockers: {0}".format(docker_servers_and_ids))
             dockers_running_with_no_game_bool = True
             str_to_return = "Found dockers running with no game"
 
@@ -150,7 +150,7 @@ def scavage_orphand_dockers():
             return str_to_return
 
     except Exception as e:
-        return "Something went wrong. Exception: " + str(e) + str(e.message)  # just a comment
+        return "Something went wrong. Exception: " + str(e)
 
 def scavage():
     logger.debug("scavage() --- started")
