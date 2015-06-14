@@ -60,6 +60,8 @@ def scavage_defunct_shassaros():
 
 def scavage_orphand_dockers():
     try:
+        logger.debug("Started scavage_orphand_docker()")
+
         str_to_return = ''
 
         # Scavage dockers that are running with no active game
@@ -150,6 +152,8 @@ def scavage_orphand_dockers():
         return "Something went wrong. Exception: " + str(e) + str(e.message)  # just a comment
 
 def scavage():
+    logger.debug("scavage() --- started")
+
     # Init objects
     statuses = {}
 
@@ -157,8 +161,15 @@ def scavage():
     dockers_running_with_no_game_bool = False
 
     statuses['games'] = scavage_games()
+    logger.debug("scavage() --- got scavage_games() result: {0}".format(statuses['games']))
+
     statuses['defunct_shassaro'] = scavage_defunct_shassaros()
+    logger.debug("scavage() --- got scavage_defunct_shassaros() result: {0}"
+                 .format(statuses['defunct_shassaro']))
+
     statuses['dockers_running_with_no_game'] = scavage_orphand_dockers()
+    logger.debug("scavage() --- got dockers_running_with_no_game() result: {0}"
+                 .format(statuses['dockers_running_with_no_game']))
 
     # Return scavaging results
     all_ok_bool = True
