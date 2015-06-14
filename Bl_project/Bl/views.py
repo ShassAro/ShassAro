@@ -302,6 +302,14 @@ class GameResultViewSet(ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
 
+    def get_user(self, request, *args, **kwargs):
+
+        username = kwargs["username"]
+        gameresults = GameResult.objects.filter(Q(winning_users=User.objects.filter(username=username)) |
+                                                Q(losing_users=User.objects.filter(username=username)))
+
+
+
 class BadgeViewSet(ModelViewSet):
     queryset = Badge.objects.all()
     serializer_class = BadgeSerializer
@@ -599,15 +607,15 @@ class UserStatsView(APIView):
         return Response(resultJson, status=status.HTTP_200_OK)
 
 
-class GameResultSpecificUser(APIView):
+class GameResultSpecificUser(ListAPIView):
 
-    def get(self, request, *args, **kwargs):
+    serializer_class = GameResultSerializer
 
-        username = kwargs["username"]
+    def get_queryset(self):
+
+        username = self.kwargs["username"]
 
         gameresults = GameResult.objects.filter(Q(winning_users=User.objects.filter(username=username)) |
                                                 Q(losing_users=User.objects.filter(username=username)))
 
-        returnJson = serializers.serialize("json", gameresults)
-
-        return Response(data=returnJson, status=status.HTTP_200_OK)
+        return gameresults
