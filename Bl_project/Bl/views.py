@@ -607,7 +607,7 @@ class UserStatsView(APIView):
         return Response(resultJson, status=status.HTTP_200_OK)
 
 
-class GameResultSpecificUser(ListAPIView):
+class GameResultSpecificUserWon(ListAPIView):
 
     serializer_class = GameResultSerializer
 
@@ -615,7 +615,19 @@ class GameResultSpecificUser(ListAPIView):
 
         username = self.kwargs["username"]
 
-        gameresults = GameResult.objects.filter(Q(winning_users=User.objects.filter(username=username)) |
-                                                Q(losing_users=User.objects.filter(username=username)))
+        gameresults = GameResult.objects.filter(winning_users=User.objects.filter(username=username))
+
+        return gameresults
+
+
+class GameResultSpecificUserLost(ListAPIView):
+
+    serializer_class = GameResultSerializer
+
+    def get_queryset(self):
+
+        username = self.kwargs["username"]
+
+        gameresults = GameResult.objects.filter(losing_users=User.objects.filter(username=username))
 
         return gameresults
