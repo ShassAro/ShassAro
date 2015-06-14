@@ -146,6 +146,8 @@ def deploy_shassaros(shassaros):
         logger.debug("Parsing response")
         shassaros_json = response.json()
         for i in range(shassaros.count()):
+            logger.debug("Json received for shassaro #{0}: ".format(i))
+            logger.debug(str(shassaros_json))
             shassaros[i].shassaro_ip = shassaros_json["shassaros"][i]["shassaro_ip"]
             shassaros[i].docker_server_ip = shassaros_json["shassaros"][i]["docker_server_ip"]
             shassaros[i].docker_id = shassaros_json["shassaros"][i]["docker_id"]
@@ -162,4 +164,31 @@ def deploy_shassaros(shassaros):
         return shassaros
 
     except Exception as e:
+
+        # Create the kill command json
+        kill_json =  {
+            "dockerServerIp": shassaros_json["shassaros"][i]["docker_server_ip"],
+            "dockerId": [
+                shassaros_json["shassaros"][0]["docker_id"],
+                shassaros_json["shassaros"][1]["docker_id"]
+            ]
+        }
+
+        # Get the docker manager
+        managers = DockerManager.objects.all()
+        if len(managers) == 0:
+            raise DockerManagerNotAvailableError()
+        docker_manager = managers[0]
+
+        # Is there a postfix?
+        docker_manager_url = "http://{0}:{1}/".format(docker_manager.ip, docker_manager.port)
+        if docker_manager.url != "/":
+            docker_manager_url += "/{0}/".format(docker_manager.url)
+
+        # Append the command name
+        docker_manager_url += "kill"
+
+        # Send the kill!
+        response = requests.post(docker_manager_url, json=kill_json)
+
         raise DeployError(e.message)

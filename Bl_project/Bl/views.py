@@ -171,6 +171,7 @@ class GameRequestViewSet(ModelViewSet):
             logger.debug("Notifyed users via websockets.")
 
             logger.debug("Start with create game routine.")
+
             created_game = CreateGame.create([username, match.username], picked_images)
 
             logger.debug("Done with create game! notify as done.")
@@ -299,6 +300,14 @@ class GameResultViewSet(ModelViewSet):
     queryset = GameResult.objects.all()
     serializer_class = GameResultSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+
+    def get_user(self, request, *args, **kwargs):
+
+        username = kwargs["username"]
+        gameresults = GameResult.objects.filter(Q(winning_users=User.objects.filter(username=username)) |
+                                                Q(losing_users=User.objects.filter(username=username)))
+
 
 
 class BadgeViewSet(ModelViewSet):
@@ -597,3 +606,28 @@ class UserStatsView(APIView):
 
         return Response(resultJson, status=status.HTTP_200_OK)
 
+
+class GameResultSpecificUserWon(ListAPIView):
+
+    serializer_class = GameResultSerializer
+
+    def get_queryset(self):
+
+        username = self.kwargs["username"]
+
+        gameresults = GameResult.objects.filter(winning_users=User.objects.filter(username=username))
+
+        return gameresults
+
+
+class GameResultSpecificUserLost(ListAPIView):
+
+    serializer_class = GameResultSerializer
+
+    def get_queryset(self):
+
+        username = self.kwargs["username"]
+
+        gameresults = GameResult.objects.filter(losing_users=User.objects.filter(username=username))
+
+        return gameresults
